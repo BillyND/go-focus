@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaPlay, FaCheck, FaTrash, FaPen, FaPlus } from "react-icons/fa";
-import { useTimerStore } from "@/store/timerStore";
+import { useTimerStore } from "../store/timerStore";
 import { toast } from "sonner";
 
 interface Task {

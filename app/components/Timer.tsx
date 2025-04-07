@@ -1,12 +1,16 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaPlay, FaPause, FaRedo, FaStepForward, FaCog } from "react-icons/fa";
-import { useTimerStore, TimerMode } from "@/store/timerStore";
-import { formatTime, getTimerProgress, getPageTitle } from "@/utils/timeFormat";
+import { useTimerStore, TimerMode } from "../store/timerStore";
+import {
+  formatTime,
+  getTimerProgress,
+  getPageTitle,
+} from "../utils/timeFormat";
 import {
   showPomodoroCompleteNotification,
   showBreakCompleteNotification,
-} from "@/utils/notifications";
+} from "../utils/notifications";
 import { toast } from "sonner";
 
 const TIMER_INTERVAL = 1000; // 1 second

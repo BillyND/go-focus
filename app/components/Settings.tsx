@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaTimes, FaVolumeUp, FaVolumeMute } from "react-icons/fa";
-import { useTimerStore } from "@/store/timerStore";
+import { useTimerStore } from "../store/timerStore";
 import { toast } from "sonner";
-import { requestNotificationPermission } from "@/utils/notifications";
+import { requestNotificationPermission } from "../utils/notifications";
 
 interface SettingsProps {
   isOpen: boolean;

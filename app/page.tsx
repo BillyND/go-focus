@@ -3,10 +3,10 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { FaCog, FaList, FaChevronUp } from "react-icons/fa";
-import Timer from "@/components/Timer";
-import Settings from "@/components/Settings";
-import TaskList from "@/components/TaskList";
-import { requestNotificationPermission } from "@/utils/notifications";
+import Timer from "./components/Timer";
+import Settings from "./components/Settings";
+import TaskList from "./components/TaskList";
+import { requestNotificationPermission } from "./utils/notifications";
 
 export default function Home() {
   const [showSettings, setShowSettings] = useState(false);
