@@ -10,7 +10,7 @@ export function TimerTabs({ currentMode, onModeChange }: TimerTabsProps) {
   const { settings } = useTimerStore();
 
   const modes: { key: TimerMode; label: string }[] = [
-    { key: TimerMode.POMODORO, label: "Pomodoro" },
+    { key: TimerMode.POMODORO, label: "Focus" },
     { key: TimerMode.SHORT_BREAK, label: "Short Break" },
     { key: TimerMode.LONG_BREAK, label: "Long Break" },
   ];

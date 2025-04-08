@@ -69,7 +69,7 @@ export default function Timer() {
       // Show different notifications based on timer mode
       if (mode === TimerMode.POMODORO) {
         showPomodoroCompleteNotification();
-        toast.success("Pomodoro complete! Time for a break!");
+        toast.success("Focus session complete! Time for a break!");
       } else {
         showBreakCompleteNotification();
         toast.success("Break complete! Time to focus!");
@@ -111,8 +111,8 @@ export default function Timer() {
         <div className="text-center mt-2">
           <div className="text-xs text-gray-500">
             Completed: <span className="font-medium">{completedPomodoros}</span>{" "}
-            pomodoros / <span className="font-medium">{completedSessions}</span>{" "}
-            sessions
+            focus sessions /{" "}
+            <span className="font-medium">{completedSessions}</span> cycles
           </div>
         </div>
       </div>

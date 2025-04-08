@@ -14,9 +14,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Pomodoro Timer",
-  description: "A modern Pomodoro timer app to boost your productivity",
-  keywords: ["pomodoro", "productivity", "timer", "focus", "next.js"],
+  title: "Go Focus",
+  description: "A modern focus timer app to boost your productivity",
+  keywords: ["focus", "productivity", "timer", "pomodoro", "next.js"],
 };
 
 export default function RootLayout({

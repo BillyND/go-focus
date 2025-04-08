@@ -164,7 +164,7 @@ export const useTimerStore = create<TimerState>()(
       },
     }),
     {
-      name: "pomodoro-timer-storage",
+      name: "go-focus-timer-storage",
       partialize: (state) => ({
         settings: state.settings,
         mode: state.mode,

@@ -16,7 +16,7 @@ export default function TaskList() {
   const [tasks, setTasks] = useState<Task[]>(() => {
     // Load tasks from localStorage on initialization
     if (typeof window !== "undefined") {
-      const savedTasks = localStorage.getItem("pomodoro-tasks");
+      const savedTasks = localStorage.getItem("go-focus-tasks");
       return savedTasks ? JSON.parse(savedTasks) : [];
     }
     return [];
@@ -33,7 +33,7 @@ export default function TaskList() {
 
   // Save tasks to localStorage whenever they change
   useEffect(() => {
-    localStorage.setItem("pomodoro-tasks", JSON.stringify(tasks));
+    localStorage.setItem("go-focus-tasks", JSON.stringify(tasks));
   }, [tasks]);
 
   // Focus the input field when editing a task
@@ -260,7 +260,7 @@ export default function TaskList() {
           <span>
             {completedTasksCount} completed / {remainingTasksCount} remaining
           </span>
-          <span>Total pomodoros: {completedPomodoros}</span>
+          <span>Total focus sessions: {completedPomodoros}</span>
         </div>
       )}
     </div>

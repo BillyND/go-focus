@@ -52,10 +52,10 @@ export function showNotification(
 }
 
 /**
- * Show pomodoro completion notification
+ * Show focus session completion notification
  */
 export function showPomodoroCompleteNotification(): void {
-  showNotification("Pomodoro Complete!", {
+  showNotification("Focus Session Complete!", {
     body: "Time to take a break!",
     silent: false,
   });
