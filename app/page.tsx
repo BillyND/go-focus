@@ -13,8 +13,14 @@ export default function Home() {
   const [showSettings, setShowSettings] = useState(false);
   const { mode, settings } = useTimerStore();
 
-  // Get current theme color based on mode
-  const currentThemeColor = settings.themeColors[mode];
+  // Get current theme color based on mode with fallback to default colors
+  const currentThemeColor =
+    settings.themeColors?.[mode] ||
+    (mode === "pomodoro"
+      ? "#d95550"
+      : mode === "shortBreak"
+      ? "#4c9195"
+      : "#457ca3");
 
   // Request notification permissions when the app first loads
   useEffect(() => {

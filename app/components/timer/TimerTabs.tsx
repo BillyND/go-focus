@@ -14,6 +14,13 @@ export function TimerTabs({ currentMode, onModeChange }: TimerTabsProps) {
     { key: "longBreak", label: "Long Break" },
   ];
 
+  // Default colors as fallback
+  const defaultColors = {
+    pomodoro: "#d95550",
+    shortBreak: "#4c9195",
+    longBreak: "#457ca3",
+  };
+
   return (
     <div className="flex w-full mb-6 overflow-hidden rounded-md bg-white/10">
       {modes.map(({ key, label }) => {
@@ -21,7 +28,7 @@ export function TimerTabs({ currentMode, onModeChange }: TimerTabsProps) {
         const activeStyle = isActive
           ? {
               backgroundColor: "white",
-              color: settings.themeColors[key],
+              color: settings.themeColors?.[key] || defaultColors[key],
             }
           : {};
 

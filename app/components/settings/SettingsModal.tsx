@@ -14,7 +14,11 @@ interface SettingsModalProps {
 
 export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
   const { settings, updateSettings } = useTimerStore();
-  const [formValues, setFormValues] = useState({ ...settings });
+  // Ensure themeColors exists by providing a fallback to defaults
+  const [formValues, setFormValues] = useState({
+    ...settings,
+    themeColors: settings.themeColors || { ...DEFAULT_THEME_COLORS },
+  });
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
 
   // Check for notification permission on component mount
