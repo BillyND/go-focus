@@ -205,6 +205,14 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
           onChange={handleSectionChange}
         />
 
+        {/* Theme Settings */}
+        <ThemeSection
+          themeColors={formValues.themeColors}
+          hourFormat={formValues.hourFormat}
+          onChange={handleSectionChange}
+          onResetColors={handleResetColors}
+        />
+
         {/* Task Settings */}
         <TaskSection
           autoCheckTasks={formValues.autoCheckTasks}
@@ -222,14 +230,6 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
           onChange={handleSectionChange}
           onPlayAlarmSound={playAlarmSound}
           onPlayTickingSound={playTickingSound}
-        />
-
-        {/* Theme Settings */}
-        <ThemeSection
-          themeColors={formValues.themeColors}
-          hourFormat={formValues.hourFormat}
-          onChange={handleSectionChange}
-          onResetColors={handleResetColors}
         />
 
         {/* Notification Settings */}

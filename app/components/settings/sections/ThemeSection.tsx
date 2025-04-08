@@ -3,6 +3,9 @@ import { debounce } from "../../../utils/debounce";
 import { FaPalette } from "react-icons/fa";
 import { CustomDropdown, DropdownOption } from "../../ui/CustomDropdown";
 import { HourFormat } from "../../../constants";
+import { ColorPickerModal } from "../../ui/ColorPickerModal";
+
+type ColorType = "pomodoro" | "shortBreak" | "longBreak";
 
 interface ThemeSectionProps {
   themeColors: {
@@ -40,6 +43,9 @@ export const ThemeSection = memo(function ThemeSection({
     themeColors,
     hourFormat,
   });
+  const [colorPickerOpen, setColorPickerOpen] = useState<ColorType | null>(
+    null
+  );
 
   // Update local state when props change
   useEffect(() => {
@@ -88,53 +94,39 @@ export const ThemeSection = memo(function ThemeSection({
         THEME
       </h3>
 
-      <div className="space-y-4">
+      <div className="space-y-5">
         <div>
-          <label className="block text-gray-700 mb-3">Color Themes</label>
-          <div className="flex gap-3 mb-2">
-            <button
-              className="w-10 h-10 rounded-md"
-              style={{ backgroundColor: localValues.themeColors.pomodoro }}
-              onClick={() => {
-                const color = window.prompt(
-                  "Enter Pomodoro color (hex):",
-                  localValues.themeColors.pomodoro
-                );
-                if (color) handleColorChange(color, "pomodoro");
-              }}
-              aria-label="Pomodoro color"
-            />
-            <button
-              className="w-10 h-10 rounded-md"
-              style={{ backgroundColor: localValues.themeColors.shortBreak }}
-              onClick={() => {
-                const color = window.prompt(
-                  "Enter Short Break color (hex):",
-                  localValues.themeColors.shortBreak
-                );
-                if (color) handleColorChange(color, "shortBreak");
-              }}
-              aria-label="Short break color"
-            />
-            <button
-              className="w-10 h-10 rounded-md"
-              style={{ backgroundColor: localValues.themeColors.longBreak }}
-              onClick={() => {
-                const color = window.prompt(
-                  "Enter Long Break color (hex):",
-                  localValues.themeColors.longBreak
-                );
-                if (color) handleColorChange(color, "longBreak");
-              }}
-              aria-label="Long break color"
-            />
+          <div className="flex justify-between items-center mb-2">
+            <label className="text-gray-700">Color Themes</label>
+            <div className="flex gap-2">
+              <button
+                className="w-8 h-8 rounded-md"
+                style={{ backgroundColor: localValues.themeColors.pomodoro }}
+                onClick={() => setColorPickerOpen("pomodoro")}
+                aria-label="Pomodoro color"
+              />
+              <button
+                className="w-8 h-8 rounded-md"
+                style={{ backgroundColor: localValues.themeColors.shortBreak }}
+                onClick={() => setColorPickerOpen("shortBreak")}
+                aria-label="Short break color"
+              />
+              <button
+                className="w-8 h-8 rounded-md"
+                style={{ backgroundColor: localValues.themeColors.longBreak }}
+                onClick={() => setColorPickerOpen("longBreak")}
+                aria-label="Long break color"
+              />
+            </div>
           </div>
-          <button
-            onClick={handleResetColors}
-            className="text-sm text-gray-600 hover:text-gray-900 mt-2"
-          >
-            Reset to defaults
-          </button>
+          <div className="flex justify-end">
+            <button
+              onClick={handleResetColors}
+              className="text-xs text-gray-600 hover:text-gray-900"
+            >
+              Reset to defaults
+            </button>
+          </div>
         </div>
 
         <div className="flex justify-between items-center">
@@ -150,6 +142,29 @@ export const ThemeSection = memo(function ThemeSection({
           />
         </div>
       </div>
+
+      {/* Color Picker Modals */}
+      <ColorPickerModal
+        isOpen={colorPickerOpen === "pomodoro"}
+        onClose={() => setColorPickerOpen(null)}
+        onSelect={(color) => handleColorChange(color, "pomodoro")}
+        title="Pick a color for Pomodoro"
+        selectedColor={localValues.themeColors.pomodoro}
+      />
+      <ColorPickerModal
+        isOpen={colorPickerOpen === "shortBreak"}
+        onClose={() => setColorPickerOpen(null)}
+        onSelect={(color) => handleColorChange(color, "shortBreak")}
+        title="Pick a color for Short Break"
+        selectedColor={localValues.themeColors.shortBreak}
+      />
+      <ColorPickerModal
+        isOpen={colorPickerOpen === "longBreak"}
+        onClose={() => setColorPickerOpen(null)}
+        onSelect={(color) => handleColorChange(color, "longBreak")}
+        title="Pick a color for Long Break"
+        selectedColor={localValues.themeColors.longBreak}
+      />
     </div>
   );
 });
