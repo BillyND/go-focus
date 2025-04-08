@@ -90,15 +90,13 @@ export default function Timer() {
   return (
     <div className="w-full max-w-md mx-auto">
       {/* Timer Mode Tabs */}
-      <div className="flex mb-8 border-b border-foreground/20">
-        {(Object.keys(modeLabels) as TimerMode[]).map((modeKey) => (
+      <div className="flex mb-8 border-collapse">
+        {(Object.keys(modeLabels) as TimerMode[]).map((modeKey, index) => (
           <button
             key={modeKey}
-            className={`flex-1 py-3 text-center text-sm font-medium transition-colors duration-300 border-b-2 ${
-              mode === modeKey
-                ? "border-primary-600 text-primary-600"
-                : "border-transparent hover:border-foreground/20"
-            }`}
+            className={`flex-1 py-2 text-center text-sm font-medium transition-colors duration-300 border border-foreground/20 ${
+              mode === modeKey ? "bg-white text-black" : "bg-transparent"
+            } ${index > 0 ? "border-l-0" : ""}`}
             onClick={() => handleModeChange(modeKey)}
           >
             {modeLabels[modeKey]}
@@ -108,7 +106,7 @@ export default function Timer() {
 
       {/* Timer Display */}
       <motion.div
-        className="card glass-effect mb-8 flex flex-col items-center justify-center py-16"
+        className="glass-effect mb-8 flex flex-col items-center justify-center py-8"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
@@ -132,15 +130,7 @@ export default function Timer() {
         </AnimatePresence>
 
         {/* Progress Bar */}
-        <div className="w-full mt-8 px-8">
-          <div className="w-full h-2 bg-foreground/10 rounded-full overflow-hidden">
-            <motion.div
-              className="h-full bg-primary-600"
-              initial={{ width: `${progress}%` }}
-              animate={{ width: `${progress}%` }}
-              transition={{ type: "spring", stiffness: 50 }}
-            />
-          </div>
+        <div className="w-full mt-8 px-4">
           <div className="flex justify-between mt-2 text-xs text-foreground/60">
             <div>{`${Math.round(progress)}%`}</div>
             <div>{formatTime(timeRemaining)}</div>
@@ -148,54 +138,75 @@ export default function Timer() {
         </div>
       </motion.div>
 
-      {/* Timer Controls */}
-      <div className="flex justify-center space-x-4 mb-8">
-        <motion.button
-          className="btn btn-icon btn-outline rounded-full"
-          whileTap={{ scale: 0.9 }}
-          onClick={isRunning ? pauseTimer : startTimer}
-        >
-          {isRunning ? <FaPause size={18} /> : <FaPlay size={18} />}
-        </motion.button>
+      {/* Timer Controls - controls absolutely positioned at the center of the screen */}
+      <div
+        className="w-full flex justify-center mt-2 mb-8"
+        style={{ marginTop: "0" }}
+      >
+        <div style={{ display: "flex", border: "1px solid black" }}>
+          <button
+            style={{
+              width: "25px",
+              height: "25px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              borderRight: "1px solid black",
+            }}
+            onClick={isRunning ? pauseTimer : startTimer}
+          >
+            {isRunning ? <FaPause size={12} /> : <FaPlay size={12} />}
+          </button>
 
-        <motion.button
-          className="btn btn-icon btn-outline rounded-full"
-          whileTap={{ scale: 0.9 }}
-          onClick={() => resetTimer()}
-        >
-          <FaRedo size={18} />
-        </motion.button>
+          <button
+            style={{
+              width: "25px",
+              height: "25px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              borderRight: "1px solid black",
+            }}
+            onClick={() => resetTimer()}
+          >
+            <FaRedo size={12} />
+          </button>
 
-        <motion.button
-          className="btn btn-icon btn-outline rounded-full"
-          whileTap={{ scale: 0.9 }}
-          onClick={skipTimer}
-        >
-          <FaStepForward size={18} />
-        </motion.button>
+          <button
+            style={{
+              width: "25px",
+              height: "25px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              borderRight: "1px solid black",
+            }}
+            onClick={skipTimer}
+          >
+            <FaStepForward size={12} />
+          </button>
 
-        <motion.button
-          className="btn btn-icon btn-outline rounded-full"
-          whileTap={{ scale: 0.9 }}
-          onClick={() => setShowSettings(!showSettings)}
-        >
-          <FaCog size={18} />
-        </motion.button>
+          <button
+            style={{
+              width: "25px",
+              height: "25px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+            onClick={() => setShowSettings(!showSettings)}
+          >
+            <FaCog size={12} />
+          </button>
+        </div>
       </div>
 
       {/* Stats Display */}
-      <div className="flex justify-center space-x-8 text-center">
-        <div>
-          <div className="text-foreground/60 text-xs mb-1">Pomodoros</div>
-          <div className="text-lg font-bold">
-            {useTimerStore.getState().completedPomodoros}
-          </div>
-        </div>
-        <div>
-          <div className="text-foreground/60 text-xs mb-1">Sessions</div>
-          <div className="text-lg font-bold">
-            {useTimerStore.getState().completedSessions}
-          </div>
+      <div className="text-center mb-4">
+        <div className="text-xs">Pomodoros/Sessions</div>
+        <div className="text-xs">
+          {useTimerStore.getState().completedPomodoros}/
+          {useTimerStore.getState().completedSessions}
         </div>
       </div>
     </div>

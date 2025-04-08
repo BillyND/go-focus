@@ -26,7 +26,7 @@ export default function Home() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h1 className="text-2xl font-bold">Pomodoro Timer</h1>
+        <h1 className="text-2xl font-bold bg-red-500">Pomodoro Timer</h1>
         <button
           className="btn btn-icon btn-ghost"
           onClick={() => setShowSettings(true)}
@@ -42,18 +42,18 @@ export default function Home() {
 
         {/* Task Toggle Button */}
         <motion.button
-          className="mt-8 btn btn-ghost flex items-center gap-2"
+          className="mt-4 btn border border-black rounded-full px-4 py-1 text-sm flex items-center gap-2"
           onClick={() => setShowTaskList(!showTaskList)}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
           {showTaskList ? (
             <>
-              <FaChevronUp size={16} /> Hide Tasks
+              <FaChevronUp size={12} /> Hide Tasks
             </>
           ) : (
             <>
-              <FaList size={16} /> Show Tasks
+              <FaList size={12} /> Show Tasks
             </>
           )}
         </motion.button>
