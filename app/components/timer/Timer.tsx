@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
-import { useTimerStore, TimerMode } from "../../store/timerStore";
+import { useTimerStore } from "../../store/timerStore";
+import { TimerMode } from "../../constants";
 import { getPageTitle } from "../../utils/timeFormat";
 import {
   showPomodoroCompleteNotification,
@@ -35,6 +36,14 @@ export default function Timer() {
 
   const [prevTimeRemaining, setPrevTimeRemaining] = useState(timeRemaining);
 
+  // Ensure timer is initialized with correct settings
+  useEffect(() => {
+    // On initial load, ensure timeRemaining matches settings
+    if (timeRemaining === 0) {
+      resetTimer(mode);
+    }
+  }, [mode, resetTimer, timeRemaining]);
+
   // Handle timer tick
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -60,7 +69,7 @@ export default function Timer() {
     // Check if timer just finished (timeRemaining is 0 but prevTimeRemaining was > 0)
     if (timeRemaining === 0 && prevTimeRemaining > 0) {
       // Show different notifications based on timer mode
-      if (mode === "pomodoro") {
+      if (mode === TimerMode.POMODORO) {
         showPomodoroCompleteNotification();
         toast.success("Pomodoro complete! Time for a break!");
       } else {

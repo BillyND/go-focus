@@ -52,16 +52,26 @@ export function Modal({
     };
   }, [isOpen, onClose]);
 
-  // Disable body scrolling when modal is open
+  // Disable body scrolling when modal is open - improved implementation
   useLayoutEffect(() => {
-    const originalStyle = window.getComputedStyle(document.body).overflow;
+    if (!isOpen) return;
 
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    }
+    // Store the original values
+    const originalStyle = document.body.style.cssText;
+    const scrollY = window.scrollY;
+
+    // Apply fixed positioning to maintain scroll position
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = "100%";
+    document.body.style.overflow = "hidden";
 
     return () => {
-      document.body.style.overflow = originalStyle;
+      // Restore original styles
+      document.body.style.cssText = originalStyle;
+
+      // Restore scroll position
+      window.scrollTo(0, scrollY);
     };
   }, [isOpen]);
 

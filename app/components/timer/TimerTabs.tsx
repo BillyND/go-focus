@@ -1,4 +1,5 @@
-import { TimerMode, useTimerStore } from "../../store/timerStore";
+import { useTimerStore } from "../../store/timerStore";
+import { TimerMode } from "../../constants";
 
 interface TimerTabsProps {
   currentMode: TimerMode;
@@ -9,9 +10,9 @@ export function TimerTabs({ currentMode, onModeChange }: TimerTabsProps) {
   const { settings } = useTimerStore();
 
   const modes: { key: TimerMode; label: string }[] = [
-    { key: "pomodoro", label: "Pomodoro" },
-    { key: "shortBreak", label: "Short Break" },
-    { key: "longBreak", label: "Long Break" },
+    { key: TimerMode.POMODORO, label: "Pomodoro" },
+    { key: TimerMode.SHORT_BREAK, label: "Short Break" },
+    { key: TimerMode.LONG_BREAK, label: "Long Break" },
   ];
 
   // Default colors as fallback

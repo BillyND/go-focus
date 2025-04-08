@@ -43,6 +43,9 @@ interface TimerState {
   updateSettings: (settings: Partial<TimerState["settings"]>) => void;
 }
 
+// Helper to convert minutes to seconds
+const minutesToSeconds = (minutes: number): number => minutes * 60;
+
 export const useTimerStore = create<TimerState>()(
   persist(
     (set, get) => ({
@@ -61,7 +64,7 @@ export const useTimerStore = create<TimerState>()(
 
       // Default state
       mode: TimerMode.POMODORO,
-      timeRemaining: 25 * 60, // 25 minutes in seconds
+      timeRemaining: minutesToSeconds(25), // Default initial value
       isRunning: false,
       completedPomodoros: 0,
       completedSessions: 0,
@@ -171,9 +174,18 @@ export const useTimerStore = create<TimerState>()(
       name: "pomodoro-timer-storage",
       partialize: (state) => ({
         settings: state.settings,
+        mode: state.mode,
         completedPomodoros: state.completedPomodoros,
         completedSessions: state.completedSessions,
       }),
+      onRehydrateStorage: () => (state) => {
+        // After store is rehydrated from localStorage, initialize timeRemaining based on settings
+        if (state) {
+          const { mode, settings } = state;
+          // Set the initial timeRemaining based on the current mode and settings
+          state.timeRemaining = settings[mode] * 60;
+        }
+      },
     }
   )
 );
