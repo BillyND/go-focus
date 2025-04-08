@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, memo } from "react";
 import { FaTrash, FaPen, FaGripVertical } from "react-icons/fa";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
@@ -21,7 +21,7 @@ export function TaskItem({
   const [editTitle, setEditTitle] = useState(task.title);
   const editInputRef = useRef<HTMLInputElement>(null);
 
-  // DnD-kit integration
+  // DnD-kit integration with improved performance settings
   const {
     attributes,
     listeners,
@@ -29,12 +29,18 @@ export function TaskItem({
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: task.id });
+  } = useSortable({
+    id: task.id,
+    animateLayoutChanges: () => false, // Disable layout animations for better performance
+  });
 
+  // Style with completely hidden original element during drag
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 100 : 1,
+    opacity: isDragging ? 0 : 1, // Make original element completely invisible during drag
+    position: "relative" as const,
   };
 
   useEffect(() => {
@@ -143,3 +149,6 @@ export function TaskItem({
     </div>
   );
 }
+
+// Wrap with memo for performance optimization
+export const MemoizedTaskItem = memo(TaskItem);

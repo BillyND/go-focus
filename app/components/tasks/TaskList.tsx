@@ -4,6 +4,8 @@ import { useTimerStore } from "../../store/timerStore";
 import {
   DndContext,
   DragEndEvent,
+  DragOverlay,
+  DragStartEvent,
   KeyboardSensor,
   PointerSensor,
   closestCenter,
@@ -16,7 +18,8 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { TaskItem } from "./TaskItem";
+import { restrictToParentElement } from "@dnd-kit/modifiers";
+import { MemoizedTaskItem } from "./TaskItem";
 import { Task } from "./types";
 
 export default function TaskList() {
@@ -30,16 +33,26 @@ export default function TaskList() {
   });
 
   const [newTaskTitle, setNewTaskTitle] = useState("");
+  const [activeId, setActiveId] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
 
   // Current pomodoro count for displaying alongside tasks
   const completedPomodoros = useTimerStore((state) => state.completedPomodoros);
 
-  // DnD kit configuration
+  // Get the active task for the overlay
+  const activeTask = useMemo(
+    () => tasks.find((task) => task.id === activeId),
+    [activeId, tasks]
+  );
+
+  // DnD kit configuration with optimized settings
   const sensors = useSensors(
     useSensor(PointerSensor, {
+      // Increase activation constraint for more intentional drags
       activationConstraint: {
-        distance: 5, // 5px minimum drag distance
+        delay: 100, // Add a small delay to prevent accidental drags
+        tolerance: 8, // Slightly more tolerant than default
       },
     }),
     useSensor(KeyboardSensor, {
@@ -106,9 +119,16 @@ export default function TaskList() {
     );
   };
 
+  // Handle the start of a drag operation
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveId(event.active.id.toString());
+  };
+
   // Handle the end of a drag operation
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
+
+    setActiveId(null); // Clear active id regardless of outcome
 
     if (over && active.id !== over.id) {
       setTasks((items) => {
@@ -121,6 +141,11 @@ export default function TaskList() {
         }));
       });
     }
+  };
+
+  // Handle cancellation of drag operation
+  const handleDragCancel = () => {
+    setActiveId(null);
   };
 
   // Count completed and remaining tasks
@@ -160,15 +185,18 @@ export default function TaskList() {
             <DndContext
               sensors={sensors}
               collisionDetection={closestCenter}
+              onDragStart={handleDragStart}
               onDragEnd={handleDragEnd}
+              onDragCancel={handleDragCancel}
+              modifiers={[restrictToParentElement]}
             >
               <SortableContext
                 items={taskIds}
                 strategy={verticalListSortingStrategy}
               >
-                <div>
+                <div ref={listRef} className="relative">
                   {tasks.map((task) => (
-                    <TaskItem
+                    <MemoizedTaskItem
                       key={task.id}
                       task={task}
                       onToggleComplete={toggleTaskCompleted}
@@ -178,6 +206,38 @@ export default function TaskList() {
                   ))}
                 </div>
               </SortableContext>
+
+              {/* Drag Overlay for visual feedback during drag */}
+              <DragOverlay adjustScale={false}>
+                {activeId && activeTask && (
+                  <div className="p-3 rounded-lg border border-white/30 bg-white/20 shadow-lg w-full">
+                    <div className="flex items-center">
+                      <div className="mr-2 flex-shrink-0">
+                        <FaPlus className="opacity-0" size={14} />
+                      </div>
+                      <div
+                        className={`flex-shrink-0 w-5 h-5 rounded-full border border-white/60 flex items-center justify-center mr-3
+                          ${
+                            activeTask.completed
+                              ? "bg-white/80"
+                              : "bg-transparent"
+                          }`}
+                      >
+                        {activeTask.completed && (
+                          <span className="text-current text-xs">✓</span>
+                        )}
+                      </div>
+                      <span
+                        className={`flex-grow text-white ${
+                          activeTask.completed ? "line-through opacity-60" : ""
+                        }`}
+                      >
+                        {activeTask.title}
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </DragOverlay>
             </DndContext>
           ) : (
             <div className="text-center text-white/70 py-8 border border-dashed border-white/20 rounded-lg">
