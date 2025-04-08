@@ -1,13 +1,12 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { AlarmSoundType, TimerMode } from "../constants";
-
-// Default theme colors
-export const DEFAULT_THEME_COLORS = {
-  pomodoro: "#d95550", // Red/Orange
-  shortBreak: "#4c9195", // Green
-  longBreak: "#457ca3", // Blue
-};
+import {
+  TimerMode,
+  AlarmSoundType,
+  DEFAULT_TIMER_SETTINGS,
+  DEFAULT_THEME_COLORS,
+  DEFAULT_SOUND_SETTINGS,
+} from "../constants";
 
 interface TimerState {
   // Timer settings
@@ -51,14 +50,8 @@ export const useTimerStore = create<TimerState>()(
     (set, get) => ({
       // Default settings
       settings: {
-        pomodoro: 25,
-        shortBreak: 5,
-        longBreak: 15,
-        longBreakInterval: 4,
-        autoStartBreaks: true,
-        autoStartPomodoros: false,
-        alarmSound: AlarmSoundType.BELL,
-        alarmVolume: 0.7,
+        ...DEFAULT_TIMER_SETTINGS,
+        ...DEFAULT_SOUND_SETTINGS,
         themeColors: { ...DEFAULT_THEME_COLORS },
       },
 

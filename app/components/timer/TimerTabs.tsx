@@ -1,5 +1,5 @@
 import { useTimerStore } from "../../store/timerStore";
-import { TimerMode } from "../../constants";
+import { TimerMode, DEFAULT_THEME_COLORS } from "../../constants";
 
 interface TimerTabsProps {
   currentMode: TimerMode;
@@ -15,12 +15,8 @@ export function TimerTabs({ currentMode, onModeChange }: TimerTabsProps) {
     { key: TimerMode.LONG_BREAK, label: "Long Break" },
   ];
 
-  // Default colors as fallback
-  const defaultColors = {
-    pomodoro: "#d95550",
-    shortBreak: "#4c9195",
-    longBreak: "#457ca3",
-  };
+  // Use the constant defaults for fallback
+  const defaultColors = DEFAULT_THEME_COLORS;
 
   return (
     <div className="flex w-full mb-6 overflow-hidden rounded-md bg-white/10">

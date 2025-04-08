@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaPlay, FaPause, FaRedo, FaStepForward, FaCog } from "react-icons/fa";
-import { useTimerStore, TimerMode } from "../store/timerStore";
+import { useTimerStore } from "../store/timerStore";
+import { TimerMode, TIMER_INTERVAL } from "../constants";
 import {
   formatTime,
   getTimerProgress,
@@ -12,8 +13,6 @@ import {
   showBreakCompleteNotification,
 } from "../utils/notifications";
 import { toast } from "sonner";
-
-const TIMER_INTERVAL = 1000; // 1 second
 
 const modeLabels: Record<TimerMode, string> = {
   pomodoro: "Focus",
@@ -64,7 +63,7 @@ export default function Timer() {
     // Check if timer just finished (timeRemaining is 0 but prevTimeRemaining was > 0)
     if (timeRemaining === 0 && prevTimeRemaining > 0) {
       // Show different notifications based on timer mode
-      if (mode === "pomodoro") {
+      if (mode === TimerMode.POMODORO) {
         showPomodoroCompleteNotification();
         toast.success("Pomodoro complete! Time for a break!");
       } else {

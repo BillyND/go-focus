@@ -1,18 +1,7 @@
 import React from "react";
 import { Modal } from "./Modal";
 import { FaCheck } from "react-icons/fa";
-
-// Predefined color options
-export const PREDEFINED_COLORS = {
-  red: "#D95550",
-  teal: "#3D948B",
-  blue: "#4C83B6",
-  gold: "#B69D4C",
-  purple: "#9C5EB1",
-  pink: "#C96D9C",
-  green: "#4E9D6D",
-  gray: "#646978",
-};
+import { PREDEFINED_COLORS } from "../../constants";
 
 interface ColorPickerModalProps {
   isOpen: boolean;

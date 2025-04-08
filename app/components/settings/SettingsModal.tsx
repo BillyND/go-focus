@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
-import { useTimerStore, DEFAULT_THEME_COLORS } from "../../store/timerStore";
+import { useTimerStore } from "../../store/timerStore";
 import { toast } from "sonner";
 import {
   AlarmSoundType,
   HourFormat,
   ReminderType,
   TickingSoundType,
+  DEFAULT_THEME_COLORS,
 } from "../../constants";
 import { requestNotificationPermission } from "../../utils/notifications";
 import { Modal } from "../ui/Modal";

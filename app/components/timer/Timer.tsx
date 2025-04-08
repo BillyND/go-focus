@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useTimerStore } from "../../store/timerStore";
-import { TimerMode } from "../../constants";
+import { TimerMode, TIMER_INTERVAL } from "../../constants";
 import { getPageTitle } from "../../utils/timeFormat";
 import {
   showPomodoroCompleteNotification,
@@ -10,8 +10,6 @@ import { toast } from "sonner";
 import { TimerTabs } from "./TimerTabs";
 import { TimerDisplay } from "./TimerDisplay";
 import { TimerControls } from "./TimerControls";
-
-const TIMER_INTERVAL = 1000; // 1 second
 
 const modeLabels: Record<TimerMode, string> = {
   pomodoro: "Focus Time",
