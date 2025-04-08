@@ -10,7 +10,7 @@ interface SoundSelectProps {
   onPlaySound: () => void;
 }
 
-const soundOptions: DropdownOption[] = [
+const soundOptions: DropdownOption<AlarmSoundType>[] = [
   { value: AlarmSoundType.BELL, label: "Bell" },
   { value: AlarmSoundType.DIGITAL, label: "Digital" },
   { value: AlarmSoundType.KITCHEN, label: "Kitchen Timer" },
