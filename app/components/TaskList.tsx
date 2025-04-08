@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaPlay, FaCheck, FaTrash, FaPen, FaPlus } from "react-icons/fa";
 import { useTimerStore } from "../store/timerStore";
+import { TimerMode } from "../constants";
 import { toast } from "sonner";
 
 interface Task {
@@ -129,7 +130,7 @@ export default function TaskList() {
   // Start the timer with a specific task
   const startTimerWithTask = (taskTitle: string) => {
     // Set timer to pomodoro mode and start it
-    useTimerStore.getState().resetTimer("pomodoro");
+    useTimerStore.getState().resetTimer(TimerMode.POMODORO);
     useTimerStore.getState().startTimer();
 
     // Show toast notification with task title
