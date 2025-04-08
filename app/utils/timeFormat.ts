@@ -47,15 +47,15 @@ export function getPageTitle(
   mode: string
 ): string {
   if (timeRemaining <= 0) {
-    return "Time's up! - Pomodoro Timer";
+    return "Time's up! - Go Focus";
   }
 
   const timeString = formatTime(timeRemaining);
   const modeDisplay = mode.charAt(0).toUpperCase() + mode.slice(1);
 
   if (isRunning) {
-    return `${timeString} - ${modeDisplay} - Pomodoro Timer`;
+    return `${timeString} - ${modeDisplay} - Go Focus`;
   }
 
-  return `${timeString} (Paused) - ${modeDisplay} - Pomodoro Timer`;
+  return `${timeString} - ${modeDisplay} - Go Focus`;
 }
