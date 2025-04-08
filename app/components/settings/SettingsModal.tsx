@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { requestNotificationPermission } from "../../utils/notifications";
 import { Modal } from "../ui/Modal";
 import { Button } from "../ui/Button";
+import { SoundSelect } from "../ui/SoundSelect";
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -213,28 +214,13 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
             <label className="block text-sm mb-1" htmlFor="alarmSound">
               Alarm Sound
             </label>
-            <div className="flex items-center gap-2">
-              <select
-                id="alarmSound"
-                name="alarmSound"
-                className="flex-grow border rounded-md px-3 py-2 text-sm"
-                value={formValues.alarmSound}
-                onChange={handleInputChange}
-              >
-                <option value="bell">Bell</option>
-                <option value="digital">Digital</option>
-                <option value="kitchen">Kitchen Timer</option>
-                <option value="analog">Analog Alarm</option>
-              </select>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={playTestSound}
-                aria-label="Test sound"
-              >
-                <FaVolumeUp size={16} />
-              </Button>
-            </div>
+            <SoundSelect
+              value={formValues.alarmSound}
+              onChange={(value) =>
+                setFormValues({ ...formValues, alarmSound: value })
+              }
+              onPlaySound={playTestSound}
+            />
           </div>
 
           <div>

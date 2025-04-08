@@ -101,11 +101,11 @@ export default function TaskList() {
       <CardContent className="space-y-4">
         {/* Add Task Form */}
         <form onSubmit={handleSubmit}>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center w-full">
             <input
               ref={inputRef}
               type="text"
-              className="flex-grow border rounded-md px-3 py-2 text-sm"
+              className="flex-grow border rounded-l-md px-3 py-2 text-sm h-9"
               placeholder="Add a new task..."
               value={newTaskTitle}
               onChange={(e) => setNewTaskTitle(e.target.value)}
@@ -113,7 +113,8 @@ export default function TaskList() {
             <Button
               type="submit"
               variant="primary"
-              size="sm"
+              size="md"
+              className="rounded-l-none h-9"
               disabled={!newTaskTitle.trim()}
               aria-label="Add task"
             >
