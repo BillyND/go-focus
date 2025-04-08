@@ -32,6 +32,8 @@ export default function Timer() {
     resetTimer,
     skipTimer,
     tick,
+    completedPomodoros,
+    completedSessions,
   } = useTimerStore();
 
   const [prevTimeRemaining, setPrevTimeRemaining] = useState(timeRemaining);
@@ -94,7 +96,7 @@ export default function Timer() {
         {(Object.keys(modeLabels) as TimerMode[]).map((modeKey, index) => (
           <button
             key={modeKey}
-            className={`flex-1 py-2 text-center text-sm font-medium transition-colors duration-300 border border-foreground/20 ${
+            className={`flex-1 py-2 text-center text-sm font-medium transition-colors duration-150 border border-foreground/20 ${
               mode === modeKey ? "bg-white text-black" : "bg-transparent"
             } ${index > 0 ? "border-l-0" : ""}`}
             onClick={() => handleModeChange(modeKey)}
@@ -109,7 +111,7 @@ export default function Timer() {
         className="glass-effect mb-8 flex flex-col items-center justify-center py-8"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+        transition={{ duration: 0.3 }}
       >
         <AnimatePresence mode="wait">
           <motion.div
@@ -117,7 +119,7 @@ export default function Timer() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.2 }}
             className="relative"
           >
             <div className="timer-text text-center">
@@ -205,8 +207,8 @@ export default function Timer() {
       <div className="text-center mb-4">
         <div className="text-xs">Pomodoros/Sessions</div>
         <div className="text-xs">
-          {useTimerStore.getState().completedPomodoros}/
-          {useTimerStore.getState().completedSessions}
+          {/* Using the hook values instead of direct store access for SSR compatibility */}
+          {completedPomodoros}/{completedSessions}
         </div>
       </div>
     </div>

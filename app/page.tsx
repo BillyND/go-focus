@@ -24,9 +24,9 @@ export default function Home() {
         className="container mx-auto mb-8 flex justify-between items-center"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+        transition={{ duration: 0.3 }}
       >
-        <h1 className="text-2xl font-bold bg-red-500">Pomodoro Timer</h1>
+        <h1 className="text-2xl font-bold">Pomodoro Timer</h1>
         <button
           className="btn btn-icon btn-ghost"
           onClick={() => setShowSettings(true)}
@@ -66,7 +66,7 @@ export default function Home() {
             height: showTaskList ? "auto" : 0,
             opacity: showTaskList ? 1 : 0,
           }}
-          transition={{ duration: 0.3 }}
+          transition={{ duration: 0.2 }}
           style={{ overflow: showTaskList ? "visible" : "hidden" }}
         >
           {showTaskList && <TaskList />}
@@ -78,7 +78,7 @@ export default function Home() {
         className="container mx-auto mt-8 text-center text-sm text-foreground/60"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
+        transition={{ duration: 0.3, delay: 0.1 }}
       >
         <p>Built with Next.js and TailwindCSS</p>
       </motion.footer>

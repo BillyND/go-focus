@@ -176,7 +176,7 @@ export default function TaskList() {
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.2 }}
+                transition={{ duration: 0.15 }}
                 className={`p-3 rounded-lg border ${
                   task.completed
                     ? "border-foreground/10 bg-foreground/5"

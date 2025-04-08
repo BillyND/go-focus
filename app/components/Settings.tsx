@@ -91,14 +91,14 @@ export default function Settings({ isOpen, onClose }: SettingsProps) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.3 }}
+          transition={{ duration: 0.2 }}
         >
           <motion.div
             className="bg-background rounded-xl max-w-lg w-full max-h-[90vh] overflow-y-auto"
             initial={{ scale: 0.9, y: 20 }}
             animate={{ scale: 1, y: 0 }}
             exit={{ scale: 0.9, y: 20 }}
-            transition={{ type: "spring", damping: 25 }}
+            transition={{ type: "spring", damping: 30, stiffness: 400 }}
           >
             <div className="flex justify-between items-center border-b border-foreground/10 p-4">
               <h2 className="text-xl font-bold">Settings</h2>
