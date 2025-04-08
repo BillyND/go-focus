@@ -193,7 +193,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
       title="Settings"
       footer={modalFooter}
     >
-      <div className="max-h-[70vh] overflow-y-auto">
+      <div>
         {/* Timer Settings */}
         <TimerSection
           pomodoro={formValues.pomodoro}
