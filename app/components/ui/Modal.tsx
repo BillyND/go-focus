@@ -59,19 +59,24 @@ export function Modal({
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
       <div
         ref={modalRef}
-        className="bg-white rounded-lg max-w-lg w-full max-h-[90vh] overflow-y-auto shadow-xl"
+        className="bg-white rounded-lg max-w-lg w-full max-h-[90vh] flex flex-col shadow-xl"
       >
-        <div className="flex justify-between items-center border-b p-4">
+        {/* Fixed Header */}
+        <div className="flex justify-between items-center border-b py-3 px-4 flex-shrink-0">
           <h2 className="text-xl font-medium">{title}</h2>
           <Button variant="icon" size="sm" onClick={onClose} aria-label="Close">
             <FaTimes size={16} />
           </Button>
         </div>
 
-        <div className="p-4">{children}</div>
+        {/* Scrollable Content */}
+        <div className="p-4 overflow-y-auto flex-grow">{children}</div>
 
+        {/* Fixed Footer */}
         {footer && (
-          <div className="p-4 border-t flex justify-end gap-2">{footer}</div>
+          <div className="py-3 px-4 border-t flex justify-end gap-2 flex-shrink-0">
+            {footer}
+          </div>
         )}
       </div>
     </div>

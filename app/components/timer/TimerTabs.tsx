@@ -1,4 +1,4 @@
-import { TimerMode } from "../../store/timerStore";
+import { TimerMode, useTimerStore } from "../../store/timerStore";
 
 interface TimerTabsProps {
   currentMode: TimerMode;
@@ -6,28 +6,41 @@ interface TimerTabsProps {
 }
 
 export function TimerTabs({ currentMode, onModeChange }: TimerTabsProps) {
+  const { settings } = useTimerStore();
+
   const modes: { key: TimerMode; label: string }[] = [
-    { key: "pomodoro", label: "Focus" },
+    { key: "pomodoro", label: "Pomodoro" },
     { key: "shortBreak", label: "Short Break" },
     { key: "longBreak", label: "Long Break" },
   ];
 
   return (
-    <div className="flex w-full mb-6 border overflow-hidden rounded">
-      {modes.map(({ key, label }) => (
-        <button
-          key={key}
-          className={`flex-1 py-3 text-center text-sm font-medium transition-colors
-            ${
-              currentMode === key
-                ? "bg-gray-800 text-white"
-                : "bg-white hover:bg-gray-100"
-            }`}
-          onClick={() => onModeChange(key)}
-        >
-          {label}
-        </button>
-      ))}
+    <div className="flex w-full mb-6 overflow-hidden rounded-md bg-white/10">
+      {modes.map(({ key, label }) => {
+        const isActive = currentMode === key;
+        const activeStyle = isActive
+          ? {
+              backgroundColor: "white",
+              color: settings.themeColors[key],
+            }
+          : {};
+
+        return (
+          <button
+            key={key}
+            className={`flex-1 py-3 text-center text-sm font-medium transition-colors
+              ${
+                isActive
+                  ? "text-opacity-100"
+                  : "text-white text-opacity-80 hover:text-opacity-100"
+              }`}
+            style={activeStyle}
+            onClick={() => onModeChange(key)}
+          >
+            {label}
+          </button>
+        );
+      })}
     </div>
   );
 }

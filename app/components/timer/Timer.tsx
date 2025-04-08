@@ -9,8 +9,6 @@ import { toast } from "sonner";
 import { TimerTabs } from "./TimerTabs";
 import { TimerDisplay } from "./TimerDisplay";
 import { TimerControls } from "./TimerControls";
-import { FaCog } from "react-icons/fa";
-import { Button } from "../ui/Button";
 
 const TIMER_INTERVAL = 1000; // 1 second
 
@@ -20,11 +18,7 @@ const modeLabels: Record<TimerMode, string> = {
   longBreak: "Long Break",
 };
 
-export default function Timer({
-  onOpenSettings,
-}: {
-  onOpenSettings: () => void;
-}) {
+export default function Timer() {
   const {
     mode,
     timeRemaining,
@@ -99,24 +93,13 @@ export default function Timer({
       />
 
       <div className="mt-6 flex flex-col items-center gap-4">
-        <div className="flex items-center gap-3">
-          <TimerControls
-            isRunning={isRunning}
-            onStart={startTimer}
-            onPause={pauseTimer}
-            onReset={() => resetTimer()}
-            onSkip={skipTimer}
-          />
-
-          <Button
-            variant="icon"
-            size="md"
-            onClick={onOpenSettings}
-            aria-label="Settings"
-          >
-            <FaCog size={14} />
-          </Button>
-        </div>
+        <TimerControls
+          isRunning={isRunning}
+          onStart={startTimer}
+          onPause={pauseTimer}
+          onReset={() => resetTimer()}
+          onSkip={skipTimer}
+        />
 
         <div className="text-center mt-2">
           <div className="text-xs text-gray-500">

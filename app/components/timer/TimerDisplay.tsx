@@ -1,6 +1,5 @@
 import { formatTime } from "../../utils/timeFormat";
 import { ProgressBar } from "../ui/ProgressBar";
-import { Card } from "../ui/Card";
 
 interface TimerDisplayProps {
   timeRemaining: number;
@@ -14,16 +13,21 @@ export function TimerDisplay({
   label,
 }: TimerDisplayProps) {
   return (
-    <Card className="w-full flex flex-col items-center justify-center py-6">
-      <span className="text-3xl md:text-5xl lg:text-6xl font-bold timer-display">
+    <div className="w-full flex flex-col items-center justify-center py-8 px-6 rounded-lg bg-white/10">
+      <span className="text-6xl md:text-7xl lg:text-8xl font-light text-white timer-display">
         {formatTime(timeRemaining)}
       </span>
 
-      <span className="mt-2 text-gray-500 text-sm font-medium">{label}</span>
+      <span className="mt-3 text-white/70 text-sm font-medium">{label}</span>
 
-      <div className="w-full mt-6 px-4">
-        <ProgressBar value={totalTime - timeRemaining} max={totalTime} />
+      <div className="w-full mt-8">
+        <ProgressBar
+          value={totalTime - timeRemaining}
+          max={totalTime}
+          color="white"
+          height="4px"
+        />
       </div>
-    </Card>
+    </div>
   );
 }

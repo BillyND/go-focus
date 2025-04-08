@@ -3,6 +3,13 @@ import { persist } from "zustand/middleware";
 
 export type TimerMode = "pomodoro" | "shortBreak" | "longBreak";
 
+// Default theme colors
+export const DEFAULT_THEME_COLORS = {
+  pomodoro: "#d95550", // Red/Orange
+  shortBreak: "#4c9195", // Green
+  longBreak: "#457ca3", // Blue
+};
+
 interface TimerState {
   // Timer settings
   settings: {
@@ -14,6 +21,11 @@ interface TimerState {
     autoStartPomodoros: boolean;
     alarmSound: string;
     alarmVolume: number;
+    themeColors: {
+      pomodoro: string;
+      shortBreak: string;
+      longBreak: string;
+    };
   };
 
   // Timer status
@@ -45,6 +57,7 @@ export const useTimerStore = create<TimerState>()(
         autoStartPomodoros: false,
         alarmSound: "bell",
         alarmVolume: 0.7,
+        themeColors: { ...DEFAULT_THEME_COLORS },
       },
 
       // Default state

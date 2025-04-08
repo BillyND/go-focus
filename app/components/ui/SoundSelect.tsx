@@ -27,12 +27,12 @@ export const SoundSelect = memo(function SoundSelect({
         value={value}
         options={soundOptions}
         onChange={onChange}
-        className="flex-grow"
+        className="flex-grow rounded-r-none"
       />
       <Button
         variant="outline"
         size="md"
-        className="rounded-l-none h-9 ml-[-1px] border-l-0"
+        className="rounded-l-none h-9 border-l-0"
         onClick={onPlaySound}
         aria-label="Test sound"
       >

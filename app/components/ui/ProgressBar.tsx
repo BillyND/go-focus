@@ -3,22 +3,35 @@ interface ProgressBarProps {
   max: number;
   className?: string;
   showLabel?: boolean;
+  color?: string;
+  height?: string;
 }
 
 export function ProgressBar({
   value,
   max,
   className = "",
-  showLabel = true,
+  showLabel = false,
+  color = "#000",
+  height = "0.5rem",
 }: ProgressBarProps) {
   const percentage = Math.min(Math.max((value / max) * 100, 0), 100);
 
   return (
     <div className={`w-full ${className}`}>
-      <div className="relative h-2 bg-gray-200 rounded-full overflow-hidden">
+      <div
+        className="relative rounded-full overflow-hidden"
+        style={{
+          height,
+          backgroundColor: "rgba(255, 255, 255, 0.2)",
+        }}
+      >
         <div
-          className="absolute h-full bg-gray-800 transition-all"
-          style={{ width: `${percentage}%` }}
+          className="absolute h-full transition-all duration-300"
+          style={{
+            width: `${percentage}%`,
+            backgroundColor: color,
+          }}
         />
       </div>
       {showLabel && (

@@ -1,5 +1,5 @@
+import { memo } from "react";
 import { FaPlay, FaPause, FaRedo, FaStepForward } from "react-icons/fa";
-import { Button } from "../ui/Button";
 
 interface TimerControlsProps {
   isRunning: boolean;
@@ -9,7 +9,7 @@ interface TimerControlsProps {
   onSkip: () => void;
 }
 
-export function TimerControls({
+export const TimerControls = memo(function TimerControls({
   isRunning,
   onStart,
   onPause,
@@ -17,33 +17,39 @@ export function TimerControls({
   onSkip,
 }: TimerControlsProps) {
   return (
-    <div className="flex items-center justify-center gap-2">
-      <Button
-        variant="icon"
-        size="md"
+    <div className="flex items-center justify-center gap-3">
+      {/* Main Start/Pause Button */}
+      <button
+        className="w-20 h-20 rounded-full bg-white flex items-center justify-center shadow-lg hover:opacity-90 transition-opacity"
         onClick={isRunning ? onPause : onStart}
         aria-label={isRunning ? "Pause timer" : "Start timer"}
       >
-        {isRunning ? <FaPause size={14} /> : <FaPlay size={14} />}
-      </Button>
+        {isRunning ? (
+          <FaPause size={24} className="ml-0.5" />
+        ) : (
+          <FaPlay size={24} className="ml-1.5" />
+        )}
+      </button>
 
-      <Button
-        variant="icon"
-        size="md"
-        onClick={onReset}
-        aria-label="Reset timer"
-      >
-        <FaRedo size={14} />
-      </Button>
+      <div className="flex flex-col gap-3 justify-center">
+        {/* Reset Button */}
+        <button
+          className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors"
+          onClick={onReset}
+          aria-label="Reset timer"
+        >
+          <FaRedo size={14} className="text-white" />
+        </button>
 
-      <Button
-        variant="icon"
-        size="md"
-        onClick={onSkip}
-        aria-label="Skip to next timer"
-      >
-        <FaStepForward size={14} />
-      </Button>
+        {/* Skip Button */}
+        <button
+          className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors"
+          onClick={onSkip}
+          aria-label="Skip to next timer"
+        >
+          <FaStepForward size={14} className="text-white ml-0.5" />
+        </button>
+      </div>
     </div>
   );
-}
+});

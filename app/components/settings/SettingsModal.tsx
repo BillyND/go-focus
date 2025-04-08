@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { FaVolumeUp, FaVolumeMute } from "react-icons/fa";
-import { useTimerStore } from "../../store/timerStore";
+import { FaVolumeUp, FaVolumeMute, FaPalette } from "react-icons/fa";
+import { useTimerStore, DEFAULT_THEME_COLORS } from "../../store/timerStore";
 import { toast } from "sonner";
 import { requestNotificationPermission } from "../../utils/notifications";
 import { Modal } from "../ui/Modal";
@@ -203,6 +203,112 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
             <label htmlFor="autoStartPomodoros" className="text-sm">
               Auto-start pomodoros
             </label>
+          </div>
+        </div>
+
+        {/* Theme Colors */}
+        <div className="space-y-4">
+          <h3 className="text-lg font-medium flex items-center gap-2">
+            <FaPalette size={16} className="text-gray-500" />
+            Theme Colors
+          </h3>
+
+          <div className="grid gap-4 sm:grid-cols-3">
+            <div>
+              <label className="block text-sm mb-2" htmlFor="pomodoroColor">
+                Focus
+              </label>
+              <div className="flex items-center gap-2">
+                <input
+                  id="pomodoroColor"
+                  name="themeColors.pomodoro"
+                  type="color"
+                  className="w-10 h-10 rounded cursor-pointer"
+                  value={formValues.themeColors.pomodoro}
+                  onChange={(e) => {
+                    setFormValues({
+                      ...formValues,
+                      themeColors: {
+                        ...formValues.themeColors,
+                        pomodoro: e.target.value,
+                      },
+                    });
+                  }}
+                />
+                <span className="text-sm font-mono">
+                  {formValues.themeColors.pomodoro.toUpperCase()}
+                </span>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm mb-2" htmlFor="shortBreakColor">
+                Short Break
+              </label>
+              <div className="flex items-center gap-2">
+                <input
+                  id="shortBreakColor"
+                  name="themeColors.shortBreak"
+                  type="color"
+                  className="w-10 h-10 rounded cursor-pointer"
+                  value={formValues.themeColors.shortBreak}
+                  onChange={(e) => {
+                    setFormValues({
+                      ...formValues,
+                      themeColors: {
+                        ...formValues.themeColors,
+                        shortBreak: e.target.value,
+                      },
+                    });
+                  }}
+                />
+                <span className="text-sm font-mono">
+                  {formValues.themeColors.shortBreak.toUpperCase()}
+                </span>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm mb-2" htmlFor="longBreakColor">
+                Long Break
+              </label>
+              <div className="flex items-center gap-2">
+                <input
+                  id="longBreakColor"
+                  name="themeColors.longBreak"
+                  type="color"
+                  className="w-10 h-10 rounded cursor-pointer"
+                  value={formValues.themeColors.longBreak}
+                  onChange={(e) => {
+                    setFormValues({
+                      ...formValues,
+                      themeColors: {
+                        ...formValues.themeColors,
+                        longBreak: e.target.value,
+                      },
+                    });
+                  }}
+                />
+                <span className="text-sm font-mono">
+                  {formValues.themeColors.longBreak.toUpperCase()}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-end">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setFormValues({
+                  ...formValues,
+                  themeColors: { ...DEFAULT_THEME_COLORS },
+                });
+              }}
+            >
+              Reset to Default Colors
+            </Button>
           </div>
         </div>
 
