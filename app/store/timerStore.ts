@@ -1,7 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-
-export type TimerMode = "pomodoro" | "shortBreak" | "longBreak";
+import { AlarmSoundType, TimerMode } from "../constants";
 
 // Default theme colors
 export const DEFAULT_THEME_COLORS = {
@@ -19,7 +18,7 @@ interface TimerState {
     longBreakInterval: number; // number of pomodoros before long break
     autoStartBreaks: boolean;
     autoStartPomodoros: boolean;
-    alarmSound: string;
+    alarmSound: AlarmSoundType;
     alarmVolume: number;
     themeColors: {
       pomodoro: string;
@@ -55,13 +54,13 @@ export const useTimerStore = create<TimerState>()(
         longBreakInterval: 4,
         autoStartBreaks: true,
         autoStartPomodoros: false,
-        alarmSound: "bell",
+        alarmSound: AlarmSoundType.BELL,
         alarmVolume: 0.7,
         themeColors: { ...DEFAULT_THEME_COLORS },
       },
 
       // Default state
-      mode: "pomodoro",
+      mode: TimerMode.POMODORO,
       timeRemaining: 25 * 60, // 25 minutes in seconds
       isRunning: false,
       completedPomodoros: 0,
@@ -86,22 +85,22 @@ export const useTimerStore = create<TimerState>()(
 
       skipTimer: () => {
         const { mode, completedPomodoros, settings } = get();
-        let newMode: TimerMode = "pomodoro";
+        let newMode: TimerMode = TimerMode.POMODORO;
         let newCompletedPomodoros = completedPomodoros;
 
         // Logic for determining the next timer mode
-        if (mode === "pomodoro") {
+        if (mode === TimerMode.POMODORO) {
           newCompletedPomodoros += 1;
 
           // Check if it's time for a long break
           if (newCompletedPomodoros % settings.longBreakInterval === 0) {
-            newMode = "longBreak";
+            newMode = TimerMode.LONG_BREAK;
           } else {
-            newMode = "shortBreak";
+            newMode = TimerMode.SHORT_BREAK;
           }
         } else {
           // If we're in a break, next is always a pomodoro
-          newMode = "pomodoro";
+          newMode = TimerMode.POMODORO;
         }
 
         // Set new state
@@ -109,11 +108,12 @@ export const useTimerStore = create<TimerState>()(
           mode: newMode,
           timeRemaining: get().settings[newMode] * 60,
           isRunning:
-            (newMode === "pomodoro" && get().settings.autoStartPomodoros) ||
-            (newMode !== "pomodoro" && get().settings.autoStartBreaks),
+            (newMode === TimerMode.POMODORO &&
+              get().settings.autoStartPomodoros) ||
+            (newMode !== TimerMode.POMODORO && get().settings.autoStartBreaks),
           completedPomodoros: newCompletedPomodoros,
           completedSessions:
-            mode === "longBreak"
+            mode === TimerMode.LONG_BREAK
               ? get().completedSessions + 1
               : get().completedSessions,
         });

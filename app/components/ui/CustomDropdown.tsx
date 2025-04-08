@@ -1,24 +1,24 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { FaChevronDown } from "react-icons/fa";
 
-export type DropdownOption = {
-  value: string;
+export type DropdownOption<T extends React.Key = string> = {
+  value: T;
   label: string;
 };
 
-interface CustomDropdownProps {
-  value: string;
-  options: DropdownOption[];
-  onChange: (value: string) => void;
+interface CustomDropdownProps<T extends React.Key = string> {
+  value: T;
+  options: DropdownOption<T>[];
+  onChange: (value: T) => void;
   className?: string;
 }
 
-export function CustomDropdown({
+export function CustomDropdown<T extends React.Key = string>({
   value,
   options,
   onChange,
   className = "",
-}: CustomDropdownProps) {
+}: CustomDropdownProps<T>) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -45,7 +45,7 @@ export function CustomDropdown({
 
   // Handle option selection
   const handleSelect = useCallback(
-    (option: DropdownOption) => {
+    (option: DropdownOption<T>) => {
       onChange(option.value);
       setIsOpen(false);
     },

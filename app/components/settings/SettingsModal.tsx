@@ -1,24 +1,79 @@
 import { useState, useEffect } from "react";
-import { FaVolumeUp, FaVolumeMute, FaPalette } from "react-icons/fa";
 import { useTimerStore, DEFAULT_THEME_COLORS } from "../../store/timerStore";
 import { toast } from "sonner";
+import {
+  AlarmSoundType,
+  HourFormat,
+  ReminderType,
+  TickingSoundType,
+} from "../../constants";
 import { requestNotificationPermission } from "../../utils/notifications";
 import { Modal } from "../ui/Modal";
 import { Button } from "../ui/Button";
-import { SoundSelect } from "../ui/SoundSelect";
+import { TimerSection } from "./sections/TimerSection";
+import { TaskSection } from "./sections/TaskSection";
+import { SoundSection } from "./sections/SoundSection";
+import { ThemeSection } from "./sections/ThemeSection";
+import { NotificationSection } from "./sections/NotificationSection";
 
 interface SettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
+// Extended settings interface with additional fields
+interface ExtendedSettings {
+  // Timer settings
+  pomodoro: number;
+  shortBreak: number;
+  longBreak: number;
+  longBreakInterval: number;
+  autoStartBreaks: boolean;
+  autoStartPomodoros: boolean;
+
+  // Sound settings
+  alarmSound: AlarmSoundType;
+  alarmVolume: number;
+  tickingSound: TickingSoundType;
+  tickingVolume: number;
+  repeatCount: number;
+
+  // Theme settings
+  themeColors: {
+    pomodoro: string;
+    shortBreak: string;
+    longBreak: string;
+  };
+  hourFormat: HourFormat;
+
+  // Task settings
+  autoCheckTasks: boolean;
+  autoSwitchTasks: boolean;
+
+  // Notification settings
+  reminderType: ReminderType;
+  reminderMinutes: number;
+}
+
 export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
   const { settings, updateSettings } = useTimerStore();
-  // Ensure themeColors exists by providing a fallback to defaults
-  const [formValues, setFormValues] = useState({
+
+  // Initialize with default values for any new fields
+  const [formValues, setFormValues] = useState<ExtendedSettings>({
     ...settings,
     themeColors: settings.themeColors || { ...DEFAULT_THEME_COLORS },
+
+    // Default values for new fields
+    tickingSound: TickingSoundType.NONE,
+    tickingVolume: 0.5,
+    repeatCount: 1,
+    hourFormat: HourFormat.TWELVE_HOUR,
+    autoCheckTasks: false,
+    autoSwitchTasks: false,
+    reminderType: ReminderType.LAST,
+    reminderMinutes: 5,
   });
+
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
 
   // Check for notification permission on component mount
@@ -28,49 +83,53 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     }
   }, []);
 
-  // Handle form input changes
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value, type } = e.target as HTMLInputElement;
-
-    // Handle different input types
-    if (type === "checkbox") {
-      const { checked } = e.target as HTMLInputElement;
-      setFormValues({ ...formValues, [name]: checked });
-    } else if (type === "range") {
-      setFormValues({ ...formValues, [name]: parseFloat(value) });
-    } else if (type === "number") {
-      // Ensure values are within reasonable limits
-      const numValue = Math.max(1, Math.min(60, parseInt(value, 10) || 1));
-      setFormValues({ ...formValues, [name]: numValue });
-    } else {
-      setFormValues({ ...formValues, [name]: value });
-    }
-  };
-
   // Handle form submission
-  const handleSubmit = (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    updateSettings(formValues);
+  const handleSubmit = () => {
+    // Only send the fields that the store actually knows about
+    // This prevents errors when we add new fields to the form that aren't in the store yet
+    const {
+      pomodoro,
+      shortBreak,
+      longBreak,
+      longBreakInterval,
+      autoStartBreaks,
+      autoStartPomodoros,
+      alarmSound,
+      alarmVolume,
+      themeColors,
+    } = formValues;
+
+    updateSettings({
+      pomodoro,
+      shortBreak,
+      longBreak,
+      longBreakInterval,
+      autoStartBreaks,
+      autoStartPomodoros,
+      alarmSound,
+      alarmVolume,
+      themeColors,
+    });
+
     onClose();
     toast.success("Settings updated");
   };
 
-  // Request notifications permission
-  const handleRequestNotifications = async () => {
-    const granted = await requestNotificationPermission();
-    setNotificationsEnabled(granted);
-
-    if (granted) {
-      toast.success("Notifications enabled");
-    } else {
-      toast.error("Notifications permission denied");
-    }
+  // Handler for section changes
+  const handleSectionChange = (values: Partial<ExtendedSettings>) => {
+    setFormValues((prev) => ({ ...prev, ...values }));
   };
 
-  // Play test sound
-  const playTestSound = () => {
+  // Reset colors to defaults
+  const handleResetColors = () => {
+    setFormValues((prev) => ({
+      ...prev,
+      themeColors: { ...DEFAULT_THEME_COLORS },
+    }));
+  };
+
+  // Play alarm sound
+  const playAlarmSound = () => {
     try {
       const audio = new Audio(`/sounds/${formValues.alarmSound}.mp3`);
       audio.volume = formValues.alarmVolume;
@@ -84,6 +143,35 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     } catch (error) {
       console.error("Could not play test sound:", error);
       toast.error("Could not play test sound");
+    }
+  };
+
+  // Play ticking sound
+  const playTickingSound = () => {
+    if (formValues.tickingSound === TickingSoundType.NONE) return;
+
+    try {
+      const audio = new Audio(`/sounds/${formValues.tickingSound}.mp3`);
+      audio.volume = formValues.tickingVolume;
+      audio.play().catch((e) => {
+        console.error("Error playing sound:", e);
+        toast.error("Sound files may be missing");
+      });
+    } catch (error) {
+      console.error("Could not play ticking sound:", error);
+      toast.error("Could not play ticking sound");
+    }
+  };
+
+  // Request notifications permission
+  const handleRequestNotifications = async () => {
+    const granted = await requestNotificationPermission();
+    setNotificationsEnabled(granted);
+
+    if (granted) {
+      toast.success("Notifications enabled");
+    } else {
+      toast.error("Notifications permission denied");
     }
   };
 
@@ -105,261 +193,55 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
       title="Settings"
       footer={modalFooter}
     >
-      <div className="space-y-6">
-        {/* Timer Durations */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-medium">Timer Durations</h3>
+      <div className="max-h-[70vh] overflow-y-auto">
+        {/* Timer Settings */}
+        <TimerSection
+          pomodoro={formValues.pomodoro}
+          shortBreak={formValues.shortBreak}
+          longBreak={formValues.longBreak}
+          longBreakInterval={formValues.longBreakInterval}
+          autoStartBreaks={formValues.autoStartBreaks}
+          autoStartPomodoros={formValues.autoStartPomodoros}
+          onChange={handleSectionChange}
+        />
 
-          <div className="grid gap-4 sm:grid-cols-3">
-            <div>
-              <label className="block text-sm mb-1" htmlFor="pomodoro">
-                Focus (minutes)
-              </label>
-              <input
-                id="pomodoro"
-                name="pomodoro"
-                type="number"
-                min="1"
-                max="60"
-                className="w-full border rounded-md px-3 py-2 text-sm"
-                value={formValues.pomodoro}
-                onChange={handleInputChange}
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm mb-1" htmlFor="shortBreak">
-                Short Break (minutes)
-              </label>
-              <input
-                id="shortBreak"
-                name="shortBreak"
-                type="number"
-                min="1"
-                max="30"
-                className="w-full border rounded-md px-3 py-2 text-sm"
-                value={formValues.shortBreak}
-                onChange={handleInputChange}
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm mb-1" htmlFor="longBreak">
-                Long Break (minutes)
-              </label>
-              <input
-                id="longBreak"
-                name="longBreak"
-                type="number"
-                min="1"
-                max="60"
-                className="w-full border rounded-md px-3 py-2 text-sm"
-                value={formValues.longBreak}
-                onChange={handleInputChange}
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm mb-1" htmlFor="longBreakInterval">
-              Long Break Interval (pomodoros)
-            </label>
-            <input
-              id="longBreakInterval"
-              name="longBreakInterval"
-              type="number"
-              min="1"
-              max="10"
-              className="w-full sm:w-1/3 border rounded-md px-3 py-2 text-sm"
-              value={formValues.longBreakInterval}
-              onChange={handleInputChange}
-            />
-          </div>
-        </div>
-
-        {/* Auto Start Options */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-medium">Auto Start</h3>
-
-          <div className="flex items-center mb-2">
-            <input
-              id="autoStartBreaks"
-              name="autoStartBreaks"
-              type="checkbox"
-              className="mr-3 h-4 w-4"
-              checked={formValues.autoStartBreaks}
-              onChange={handleInputChange}
-            />
-            <label htmlFor="autoStartBreaks" className="text-sm">
-              Auto-start breaks
-            </label>
-          </div>
-
-          <div className="flex items-center">
-            <input
-              id="autoStartPomodoros"
-              name="autoStartPomodoros"
-              type="checkbox"
-              className="mr-3 h-4 w-4"
-              checked={formValues.autoStartPomodoros}
-              onChange={handleInputChange}
-            />
-            <label htmlFor="autoStartPomodoros" className="text-sm">
-              Auto-start pomodoros
-            </label>
-          </div>
-        </div>
-
-        {/* Theme Colors */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-medium flex items-center gap-2">
-            <FaPalette size={16} className="text-gray-500" />
-            Theme Colors
-          </h3>
-
-          <div className="grid gap-4 sm:grid-cols-3">
-            <div>
-              <label className="block text-sm mb-2" htmlFor="pomodoroColor">
-                Focus
-              </label>
-              <div className="flex items-center gap-2">
-                <input
-                  id="pomodoroColor"
-                  name="themeColors.pomodoro"
-                  type="color"
-                  className="w-10 h-10 rounded cursor-pointer"
-                  value={formValues.themeColors.pomodoro}
-                  onChange={(e) => {
-                    setFormValues({
-                      ...formValues,
-                      themeColors: {
-                        ...formValues.themeColors,
-                        pomodoro: e.target.value,
-                      },
-                    });
-                  }}
-                />
-                <span className="text-sm font-mono">
-                  {formValues.themeColors.pomodoro.toUpperCase()}
-                </span>
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm mb-2" htmlFor="shortBreakColor">
-                Short Break
-              </label>
-              <div className="flex items-center gap-2">
-                <input
-                  id="shortBreakColor"
-                  name="themeColors.shortBreak"
-                  type="color"
-                  className="w-10 h-10 rounded cursor-pointer"
-                  value={formValues.themeColors.shortBreak}
-                  onChange={(e) => {
-                    setFormValues({
-                      ...formValues,
-                      themeColors: {
-                        ...formValues.themeColors,
-                        shortBreak: e.target.value,
-                      },
-                    });
-                  }}
-                />
-                <span className="text-sm font-mono">
-                  {formValues.themeColors.shortBreak.toUpperCase()}
-                </span>
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm mb-2" htmlFor="longBreakColor">
-                Long Break
-              </label>
-              <div className="flex items-center gap-2">
-                <input
-                  id="longBreakColor"
-                  name="themeColors.longBreak"
-                  type="color"
-                  className="w-10 h-10 rounded cursor-pointer"
-                  value={formValues.themeColors.longBreak}
-                  onChange={(e) => {
-                    setFormValues({
-                      ...formValues,
-                      themeColors: {
-                        ...formValues.themeColors,
-                        longBreak: e.target.value,
-                      },
-                    });
-                  }}
-                />
-                <span className="text-sm font-mono">
-                  {formValues.themeColors.longBreak.toUpperCase()}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex justify-end">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                setFormValues({
-                  ...formValues,
-                  themeColors: { ...DEFAULT_THEME_COLORS },
-                });
-              }}
-            >
-              Reset to Default Colors
-            </Button>
-          </div>
-        </div>
+        {/* Task Settings */}
+        <TaskSection
+          autoCheckTasks={formValues.autoCheckTasks}
+          autoSwitchTasks={formValues.autoSwitchTasks}
+          onChange={handleSectionChange}
+        />
 
         {/* Sound Settings */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-medium">Sound</h3>
+        <SoundSection
+          alarmSound={formValues.alarmSound}
+          alarmVolume={formValues.alarmVolume}
+          tickingSound={formValues.tickingSound}
+          tickingVolume={formValues.tickingVolume}
+          repeatCount={formValues.repeatCount}
+          onChange={handleSectionChange}
+          onPlayAlarmSound={playAlarmSound}
+          onPlayTickingSound={playTickingSound}
+        />
 
-          <div>
-            <label className="block text-sm mb-1" htmlFor="alarmSound">
-              Alarm Sound
-            </label>
-            <SoundSelect
-              value={formValues.alarmSound}
-              onChange={(value) =>
-                setFormValues({ ...formValues, alarmSound: value })
-              }
-              onPlaySound={playTestSound}
-            />
-          </div>
+        {/* Theme Settings */}
+        <ThemeSection
+          themeColors={formValues.themeColors}
+          hourFormat={formValues.hourFormat}
+          onChange={handleSectionChange}
+          onResetColors={handleResetColors}
+        />
 
-          <div>
-            <div className="flex justify-between text-sm mb-1">
-              <label htmlFor="alarmVolume">Volume</label>
-              <span>{Math.round(formValues.alarmVolume * 100)}%</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <FaVolumeMute size={16} className="text-gray-500" />
-              <input
-                id="alarmVolume"
-                name="alarmVolume"
-                type="range"
-                min="0"
-                max="1"
-                step="0.01"
-                className="w-full h-2 rounded-full bg-gray-200 appearance-none"
-                value={formValues.alarmVolume}
-                onChange={handleInputChange}
-              />
-              <FaVolumeUp size={16} className="text-gray-500" />
-            </div>
-          </div>
-        </div>
+        {/* Notification Settings */}
+        <NotificationSection
+          reminderType={formValues.reminderType}
+          reminderMinutes={formValues.reminderMinutes}
+          onChange={handleSectionChange}
+        />
 
-        {/* Notifications */}
-        <div className="space-y-4">
-          <h3 className="text-lg font-medium">Notifications</h3>
-
+        {/* Notifications Permission */}
+        <div className="py-4">
+          <h3 className="text-lg font-medium mb-4">Browser Notifications</h3>
           <Button
             variant={notificationsEnabled ? "outline" : "primary"}
             onClick={handleRequestNotifications}
@@ -369,8 +251,7 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
               ? "Notifications Enabled"
               : "Enable Notifications"}
           </Button>
-
-          <p className="text-xs text-gray-500">
+          <p className="mt-2 text-xs text-gray-500">
             Notifications will alert you when a timer ends, even if the tab is
             in the background.
           </p>

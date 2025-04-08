@@ -2,18 +2,20 @@ import { FaVolumeUp } from "react-icons/fa";
 import { memo } from "react";
 import { Button } from "./Button";
 import { CustomDropdown, DropdownOption } from "./CustomDropdown";
+import { AlarmSoundType } from "../../constants";
 
 interface SoundSelectProps {
-  value: string;
-  onChange: (value: string) => void;
+  value: AlarmSoundType;
+  onChange: (value: AlarmSoundType) => void;
   onPlaySound: () => void;
 }
 
 const soundOptions: DropdownOption[] = [
-  { value: "bell", label: "Bell" },
-  { value: "digital", label: "Digital" },
-  { value: "kitchen", label: "Kitchen Timer" },
-  { value: "analog", label: "Analog Alarm" },
+  { value: AlarmSoundType.BELL, label: "Bell" },
+  { value: AlarmSoundType.DIGITAL, label: "Digital" },
+  { value: AlarmSoundType.KITCHEN, label: "Kitchen Timer" },
+  { value: AlarmSoundType.ANALOG, label: "Analog Alarm" },
+  { value: AlarmSoundType.WOOD, label: "Wood" },
 ];
 
 export const SoundSelect = memo(function SoundSelect({
