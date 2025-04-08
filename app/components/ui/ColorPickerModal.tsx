@@ -30,8 +30,9 @@ export const ColorPickerModal: React.FC<ColorPickerModalProps> = ({
   selectedColor,
 }) => {
   const handleColorSelect = (color: string) => {
+    // Just call onSelect without closing the modal
+    // This allows users to try multiple colors without closing the modal
     onSelect(color);
-    onClose();
   };
 
   return (

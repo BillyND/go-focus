@@ -74,6 +74,17 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     reminderMinutes: 5,
   });
 
+  // Update form values when settings change or modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setFormValues((prevValues) => ({
+        ...prevValues,
+        ...settings,
+        themeColors: settings.themeColors || { ...DEFAULT_THEME_COLORS },
+      }));
+    }
+  }, [isOpen, settings]);
+
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
 
   // Check for notification permission on component mount
@@ -117,15 +128,29 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 
   // Handler for section changes
   const handleSectionChange = (values: Partial<ExtendedSettings>) => {
+    // Update local form state
     setFormValues((prev) => ({ ...prev, ...values }));
+
+    // Update the store immediately if theme colors change
+    if (values.themeColors) {
+      updateSettings({
+        themeColors: values.themeColors,
+      });
+    }
   };
 
   // Reset colors to defaults
   const handleResetColors = () => {
+    // Update local form state
     setFormValues((prev) => ({
       ...prev,
       themeColors: { ...DEFAULT_THEME_COLORS },
     }));
+
+    // Also update the store immediately
+    updateSettings({
+      themeColors: { ...DEFAULT_THEME_COLORS },
+    });
   };
 
   // Play alarm sound
@@ -176,14 +201,9 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
   };
 
   const modalFooter = (
-    <>
-      <Button variant="outline" onClick={onClose}>
-        Cancel
-      </Button>
-      <Button variant="primary" onClick={handleSubmit}>
-        Save Changes
-      </Button>
-    </>
+    <Button variant="primary" onClick={handleSubmit}>
+      Done
+    </Button>
   );
 
   return (

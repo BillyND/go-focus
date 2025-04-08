@@ -55,7 +55,7 @@ export const ThemeSection = memo(function ThemeSection({
     });
   }, [themeColors, hourFormat]);
 
-  // Debounced update function
+  // Debounced update function for hour format
   const debouncedOnChange = useCallback(
     debounce((values: Partial<ThemeSectionProps>) => {
       onChange(values);
@@ -63,23 +63,35 @@ export const ThemeSection = memo(function ThemeSection({
     [onChange]
   );
 
+  // Handle hour format changes
+  const handleHourFormatChange = (value: HourFormat) => {
+    // Update local state immediately
+    setLocalValues((prev) => ({ ...prev, hourFormat: value }));
+
+    // Use debounce for parent update
+    debouncedOnChange({ hourFormat: value });
+  };
+
   const handleColorChange = (color: string, type: keyof typeof themeColors) => {
+    // New theme colors
+    const newThemeColors = {
+      ...localValues.themeColors,
+      [type]: color,
+    };
+
     // Update local state immediately
     setLocalValues((prev) => ({
       ...prev,
-      themeColors: {
-        ...prev.themeColors,
-        [type]: color,
-      },
+      themeColors: newThemeColors,
     }));
 
-    // Debounce update to parent
-    debouncedOnChange({
-      themeColors: {
-        ...localValues.themeColors,
-        [type]: color,
-      },
+    // Update parent state immediately as well (no debounce)
+    onChange({
+      themeColors: newThemeColors,
     });
+
+    // Keep the color picker modal open
+    // User can continue selecting colors or close manually
   };
 
   // Local reset function
@@ -134,10 +146,7 @@ export const ThemeSection = memo(function ThemeSection({
           <CustomDropdown<HourFormat>
             value={localValues.hourFormat}
             options={hourFormatOptions}
-            onChange={(value) => {
-              setLocalValues((prev) => ({ ...prev, hourFormat: value }));
-              debouncedOnChange({ hourFormat: value });
-            }}
+            onChange={handleHourFormatChange}
             className="w-36"
           />
         </div>
