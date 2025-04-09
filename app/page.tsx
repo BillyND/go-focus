@@ -7,7 +7,7 @@ import { useTimerStore } from "./store/timerStore";
 import { DEFAULT_THEME_COLORS, TimerMode } from "./constants";
 import { calculateFinishTime } from "./utils/timeUtils";
 import Timer from "./components/timer/Timer";
-import NewTaskList from "./components/tasks/NewTaskList"; // Using the new TaskList component
+import NewTaskList from "./components/tasks/NewTaskList";
 import SettingsModal from "./components/settings/SettingsModal";
 import { Button } from "./components/ui/Button";
 
@@ -75,7 +75,6 @@ export default function Home() {
           {/* Tasks Section */}
           <div className="mt-6 w-full">
             <NewTaskList
-              title="Learn english"
               currentPomodoroCount={completedPomodoros}
               targetPomodoroCount={3}
               finishTime={finishTime}

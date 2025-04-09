@@ -1,12 +1,14 @@
-import React, { useState, useEffect, memo } from "react";
+import React, { useState, memo } from "react";
 import { FaPlus, FaEllipsisV } from "react-icons/fa";
 import { TaskMenu } from "./TaskMenu";
 import { TaskMenuAction } from "../../constants";
 import { Task } from "./types";
 import { TaskEditor } from "../tasks/TaskEditor";
+import { useTaskStore } from "../../store/taskStore";
+import { useTimerStore } from "../../store/timerStore";
+import { TimerMode } from "../../constants";
 
 interface TaskListProps {
-  title: string;
   currentPomodoroCount: number;
   targetPomodoroCount: number;
   finishTime: string;
@@ -26,7 +28,9 @@ const TaskItem = memo(function TaskItem({
   task,
   onClick,
   onToggleComplete,
-}: TaskItemProps) {
+  onEdit,
+  isSelected,
+}: TaskItemProps & { onEdit: (task: Task) => void; isSelected?: boolean }) {
   // Tracks for each task are completed / estimated pomodoros
   const pomodoroRatio = `${task.actualPomodoros || 0}/${
     task.estimatedPomodoros || 1
@@ -34,7 +38,9 @@ const TaskItem = memo(function TaskItem({
 
   return (
     <div
-      className="mb-2 py-3 px-4 bg-white rounded-md flex items-center justify-between cursor-pointer hover:bg-gray-50"
+      className={`mb-2 py-3 px-4 bg-white rounded-md flex items-center justify-between cursor-pointer hover:bg-gray-50 ${
+        isSelected ? "border-l-4 border-l-gray-800" : ""
+      }`}
       onClick={() => onClick(task)}
     >
       <div className="flex items-center">
@@ -60,13 +66,36 @@ const TaskItem = memo(function TaskItem({
         </span>
       </div>
 
-      <span className="text-gray-500 text-sm">{pomodoroRatio}</span>
+      <div className="flex items-center gap-2">
+        <span className="text-gray-500 text-sm">{pomodoroRatio}</span>
+        <button
+          className="text-gray-400 hover:text-gray-600 transition-colors"
+          onClick={(e) => {
+            e.stopPropagation(); // Prevent task selection when clicking edit
+            onEdit(task);
+          }}
+          aria-label="Edit task"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3Z" />
+          </svg>
+        </button>
+      </div>
     </div>
   );
 });
 
 export default function NewTaskList({
-  title,
   currentPomodoroCount,
   targetPomodoroCount,
   finishTime,
@@ -74,95 +103,120 @@ export default function NewTaskList({
   relativeTimeText = "(0.2h)",
   onAddTask,
 }: TaskListProps) {
-  const [tasks, setTasks] = useState<Task[]>(() => {
-    // Load tasks from localStorage on initialization
-    if (typeof window !== "undefined") {
-      const savedTasks = localStorage.getItem("pomodoro-tasks");
-      return savedTasks ? JSON.parse(savedTasks) : [];
-    }
-    return [];
-  });
+  // Get current timer mode for the header title when no task is selected
+  const timerMode = useTimerStore((state) => state.mode);
+  const modeLabels: Record<TimerMode, string> = {
+    pomodoro: "Focus",
+    shortBreak: "Short Break",
+    longBreak: "Long Break",
+  };
 
-  const [currentTask, setCurrentTask] = useState<Task | null>(null);
+  // Task store state
+  const {
+    tasks,
+    selectedTaskId,
+    addTask: storeAddTask,
+    updateTask: storeUpdateTask,
+    deleteTask: storeDeleteTask,
+    toggleTaskCompleted,
+    selectTask,
+    clearCompletedTasks,
+    clearAllTasks,
+    resetActualPomodoros,
+  } = useTaskStore();
+
+  // Find the selected task or get the first task if none is selected
+  const selectedTask = selectedTaskId
+    ? tasks.find((t) => t.id === selectedTaskId)
+    : tasks.length > 0
+    ? tasks[0]
+    : null;
+
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [isAddingTask, setIsAddingTask] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  // Save tasks to localStorage whenever they change
-  useEffect(() => {
-    localStorage.setItem("pomodoro-tasks", JSON.stringify(tasks));
-  }, [tasks]);
+  // Handle clicking on a task (select/unselect)
+  const handleTaskClick = (task: Task) => {
+    // If clicking on the already selected task, unselect it
+    if (selectedTaskId === task.id) {
+      selectTask(null);
+    } else {
+      // Otherwise, select the clicked task
+      selectTask(task.id);
+    }
+  };
 
-  // Toggle task completion
-  const toggleTaskCompleted = (id: string) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === id ? { ...task, completed: !task.completed } : task
-      )
-    );
+  // Handle opening the edit dialog
+  const handleEditTask = (task: Task) => {
+    setEditingTask(task);
   };
 
   // Add a new task
-  const addTask = (title: string, estimatedPomodoros: number) => {
+  const addTask = (taskTitle: string, estimatedPomodoros: number) => {
     const newTask: Task = {
       id: Date.now().toString(),
-      title: title,
+      title: taskTitle,
       completed: false,
       createdAt: Date.now(),
       estimatedPomodoros,
       actualPomodoros: 0,
     };
 
-    setTasks([...tasks, newTask]);
+    storeAddTask(newTask);
     setIsAddingTask(false);
-  };
 
-  // Update an existing task
-  const updateTask = (title: string, estimatedPomodoros: number) => {
-    if (!currentTask) return;
-
-    const updatedTask: Task = {
-      ...currentTask,
-      title,
-      estimatedPomodoros,
-    };
-
-    setTasks(
-      tasks.map((task) => (task.id === updatedTask.id ? updatedTask : task))
-    );
-    setCurrentTask(null);
+    // If this is the first task, automatically select it
+    if (tasks.length === 0) {
+      selectTask(newTask.id);
+    }
 
     // Call the onAddTask callback if provided
     if (onAddTask) onAddTask();
   };
 
-  // Delete a task
-  const deleteTask = (id: string) => {
-    setTasks(tasks.filter((task) => task.id !== id));
-    setCurrentTask(null);
+  // Update an existing task
+  const updateTask = (taskTitle: string, estimatedPomodoros: number) => {
+    if (!editingTask) return;
+
+    const updatedTask: Task = {
+      ...editingTask,
+      title: taskTitle,
+      estimatedPomodoros,
+    };
+
+    storeUpdateTask(updatedTask);
+    setEditingTask(null);
+
+    // Call the onAddTask callback if provided
+    if (onAddTask) onAddTask();
   };
 
   // Handle menu actions
   const handleMenuAction = (action: TaskMenuAction) => {
     switch (action) {
       case TaskMenuAction.CLEAR_FINISHED:
-        setTasks(tasks.filter((task) => !task.completed));
+        clearCompletedTasks();
         break;
       case TaskMenuAction.CLEAR_ALL:
-        setTasks([]);
+        clearAllTasks();
         break;
       case TaskMenuAction.CLEAR_ACT_POMODOROS:
-        setTasks(tasks.map((task) => ({ ...task, actualPomodoros: 0 })));
+        resetActualPomodoros();
         break;
       // Other actions would be implemented here
     }
+
+    setIsMenuOpen(false);
   };
 
   return (
     <div className="w-full max-w-md mx-auto">
       {/* Header with task title and menu */}
       <div className="text-center mb-2">
-        <div className="text-sm text-white/80">#{currentPomodoroCount}</div>
-        <div className="text-xl text-white font-medium">{title}</div>
+        <div className="text-xl text-white font-medium">
+          {selectedTask?.title || modeLabels[timerMode]}
+        </div>
       </div>
 
       {/* Tasks section */}
@@ -189,8 +243,10 @@ export default function NewTaskList({
             <TaskItem
               key={task.id}
               task={task}
-              onClick={setCurrentTask}
+              onClick={handleTaskClick}
               onToggleComplete={toggleTaskCompleted}
+              onEdit={handleEditTask}
+              isSelected={selectedTask?.id === task.id}
             />
           ))}
         </div>
@@ -222,16 +278,18 @@ export default function NewTaskList({
       </div>
 
       {/* Task editor dialog */}
-      {(currentTask || isAddingTask) && (
+      {(editingTask || isAddingTask) && (
         <TaskEditor
-          task={currentTask}
+          task={editingTask}
           isOpen={true}
           onClose={() => {
-            setCurrentTask(null);
+            setEditingTask(null);
             setIsAddingTask(false);
           }}
-          onSave={currentTask ? updateTask : addTask}
-          onDelete={currentTask ? () => deleteTask(currentTask.id) : undefined}
+          onSave={editingTask ? updateTask : addTask}
+          onDelete={
+            editingTask ? () => storeDeleteTask(editingTask.id) : undefined
+          }
         />
       )}
     </div>

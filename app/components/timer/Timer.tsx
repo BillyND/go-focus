@@ -28,8 +28,6 @@ export default function Timer() {
     resetTimer,
     skipTimer,
     tick,
-    completedPomodoros,
-    completedSessions,
   } = useTimerStore();
 
   const [prevTimeRemaining, setPrevTimeRemaining] = useState(timeRemaining);
@@ -107,14 +105,6 @@ export default function Timer() {
           onReset={() => resetTimer()}
           onSkip={skipTimer}
         />
-
-        <div className="text-center mt-2">
-          <div className="text-xs text-gray-500">
-            Completed: <span className="font-medium">{completedPomodoros}</span>{" "}
-            focus sessions /{" "}
-            <span className="font-medium">{completedSessions}</span> cycles
-          </div>
-        </div>
       </div>
     </div>
   );
