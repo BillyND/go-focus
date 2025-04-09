@@ -1,18 +1,19 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { FaCog } from "react-icons/fa";
 import { requestNotificationPermission } from "./utils/notifications";
 import { useTimerStore } from "./store/timerStore";
 import { DEFAULT_THEME_COLORS, TimerMode } from "./constants";
+import { calculateFinishTime } from "./utils/timeUtils";
 import Timer from "./components/timer/Timer";
-import TaskList from "./components/tasks/TaskList";
+import NewTaskList from "./components/tasks/NewTaskList"; // Using the new TaskList component
 import SettingsModal from "./components/settings/SettingsModal";
 import { Button } from "./components/ui/Button";
 
 export default function Home() {
   const [showSettings, setShowSettings] = useState(false);
-  const { mode, settings } = useTimerStore();
+  const { mode, settings, completedPomodoros, timeRemaining } = useTimerStore();
 
   // Get current theme color based on mode with fallback to default colors
   const currentThemeColor =
@@ -22,6 +23,24 @@ export default function Home() {
       : mode === TimerMode.SHORT_BREAK
       ? DEFAULT_THEME_COLORS.shortBreak
       : DEFAULT_THEME_COLORS.longBreak);
+
+  // Calculate finish time based on current timer and settings
+  const { finishTime, relativeHours } = useMemo(() => {
+    // Get remaining pomodoros from target (3 is our target for this demo)
+    const targetPomodoros = 3;
+    const remainingPomodoros = Math.max(
+      0,
+      targetPomodoros - completedPomodoros
+    );
+
+    // Calculate total minutes remaining
+    // Current pomodoro remaining time + remaining full pomodoros
+    const minutesRemaining =
+      timeRemaining / 60 + // Current pomodoro's remaining minutes
+      remainingPomodoros * settings.pomodoro; // Future pomodoros
+
+    return calculateFinishTime(minutesRemaining);
+  }, [completedPomodoros, timeRemaining, settings.pomodoro]);
 
   // Request notification permissions when the app first loads
   useEffect(() => {
@@ -55,7 +74,14 @@ export default function Home() {
 
           {/* Tasks Section */}
           <div className="mt-6 w-full">
-            <TaskList />
+            <NewTaskList
+              title="Learn english"
+              currentPomodoroCount={completedPomodoros}
+              targetPomodoroCount={3}
+              finishTime={finishTime}
+              finishTimeIsRelative={true}
+              relativeTimeText={relativeHours}
+            />
           </div>
         </div>
       </main>

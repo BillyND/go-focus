@@ -3,6 +3,7 @@ import { debounce } from "../../../utils/debounce";
 import { FaVolumeUp } from "react-icons/fa";
 import { CustomDropdown, DropdownOption } from "../../ui/CustomDropdown";
 import { AlarmSoundType, TickingSoundType } from "../../../constants";
+import { RangeSlider } from "../../ui/RangeSlider";
 
 interface SoundSectionProps {
   alarmSound: AlarmSoundType;
@@ -75,11 +76,7 @@ export const SoundSection = memo(function SoundSection({
     [onChange]
   );
 
-  const handleVolumeChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    type: "alarm" | "ticking"
-  ) => {
-    const volume = parseFloat(e.target.value);
+  const handleVolumeChange = (volume: number, type: "alarm" | "ticking") => {
     if (type === "alarm") {
       setLocalValues((prev) => ({ ...prev, alarmVolume: volume }));
       debouncedOnChange({ alarmVolume: volume });
@@ -120,20 +117,13 @@ export const SoundSection = memo(function SoundSection({
           </div>
 
           <div className="mt-3">
-            <div className="flex justify-between mb-1">
-              <span className="text-gray-500 text-sm">Volume</span>
-              <span className="text-gray-500 text-sm">
-                {Math.round(localValues.alarmVolume * 100)}
-              </span>
-            </div>
-            <input
-              type="range"
-              min="0"
-              max="1"
-              step="0.01"
+            <RangeSlider
+              min={0}
+              max={1}
+              step={0.01}
               value={localValues.alarmVolume}
-              onChange={(e) => handleVolumeChange(e, "alarm")}
-              className="w-full"
+              onChange={(value) => handleVolumeChange(value, "alarm")}
+              label="Volume"
             />
           </div>
 
@@ -178,20 +168,13 @@ export const SoundSection = memo(function SoundSection({
           </div>
 
           <div className="mt-3">
-            <div className="flex justify-between mb-1">
-              <span className="text-gray-500 text-sm">Volume</span>
-              <span className="text-gray-500 text-sm">
-                {Math.round(localValues.tickingVolume * 100)}
-              </span>
-            </div>
-            <input
-              type="range"
-              min="0"
-              max="1"
-              step="0.01"
+            <RangeSlider
+              min={0}
+              max={1}
+              step={0.01}
               value={localValues.tickingVolume}
-              onChange={(e) => handleVolumeChange(e, "ticking")}
-              className="w-full"
+              onChange={(value) => handleVolumeChange(value, "ticking")}
+              label="Volume"
             />
           </div>
         </div>
