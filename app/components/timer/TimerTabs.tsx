@@ -1,5 +1,9 @@
 import { useTimerStore } from "../../store/timerStore";
-import { TimerMode, DEFAULT_THEME_COLORS } from "../../constants";
+import {
+  TimerMode,
+  DEFAULT_THEME_COLORS,
+  TIMER_MODE_LABELS,
+} from "../../constants";
 
 interface TimerTabsProps {
   currentMode: TimerMode;
@@ -9,11 +13,11 @@ interface TimerTabsProps {
 export function TimerTabs({ currentMode, onModeChange }: TimerTabsProps) {
   const { settings } = useTimerStore();
 
-  const modes: { key: TimerMode; label: string }[] = [
-    { key: TimerMode.POMODORO, label: "Focus" },
-    { key: TimerMode.SHORT_BREAK, label: "Short Break" },
-    { key: TimerMode.LONG_BREAK, label: "Long Break" },
-  ];
+  // Convert the TIMER_MODE_LABELS into the format needed for this component
+  const modes = Object.entries(TIMER_MODE_LABELS).map(([key, label]) => ({
+    key: key as TimerMode,
+    label,
+  }));
 
   // Use the constant defaults for fallback
   const defaultColors = DEFAULT_THEME_COLORS;

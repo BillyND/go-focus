@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaPlay, FaPause, FaRedo, FaStepForward, FaCog } from "react-icons/fa";
 import { useTimerStore } from "../store/timerStore";
-import { TimerMode, TIMER_INTERVAL } from "../constants";
+import { TimerMode, TIMER_INTERVAL, TIMER_MODE_LABELS } from "../constants";
 import {
   formatTime,
   getTimerProgress,
@@ -13,12 +13,6 @@ import {
   showBreakCompleteNotification,
 } from "../utils/notifications";
 import { toast } from "sonner";
-
-const modeLabels: Record<TimerMode, string> = {
-  pomodoro: "Focus",
-  shortBreak: "Short Break",
-  longBreak: "Long Break",
-};
 
 export default function Timer() {
   const {
@@ -55,7 +49,11 @@ export default function Timer() {
 
   // Update document title based on timer state
   useEffect(() => {
-    document.title = getPageTitle(timeRemaining, isRunning, modeLabels[mode]);
+    document.title = getPageTitle(
+      timeRemaining,
+      isRunning,
+      TIMER_MODE_LABELS[mode]
+    );
   }, [timeRemaining, isRunning, mode]);
 
   // Handle timer completion notifications
@@ -92,17 +90,19 @@ export default function Timer() {
     <div className="w-full max-w-md mx-auto">
       {/* Timer Mode Tabs */}
       <div className="flex mb-8 border-collapse">
-        {(Object.keys(modeLabels) as TimerMode[]).map((modeKey, index) => (
-          <button
-            key={modeKey}
-            className={`flex-1 py-2 text-center text-sm font-medium transition-colors duration-150 border border-foreground/20 ${
-              mode === modeKey ? "bg-white text-black" : "bg-transparent"
-            } ${index > 0 ? "border-l-0" : ""}`}
-            onClick={() => handleModeChange(modeKey)}
-          >
-            {modeLabels[modeKey]}
-          </button>
-        ))}
+        {(Object.keys(TIMER_MODE_LABELS) as TimerMode[]).map(
+          (modeKey, index) => (
+            <button
+              key={modeKey}
+              className={`flex-1 py-2 text-center text-sm font-medium transition-colors duration-150 border border-foreground/20 ${
+                mode === modeKey ? "bg-white text-black" : "bg-transparent"
+              } ${index > 0 ? "border-l-0" : ""}`}
+              onClick={() => handleModeChange(modeKey)}
+            >
+              {TIMER_MODE_LABELS[modeKey]}
+            </button>
+          )
+        )}
       </div>
 
       {/* Timer Display */}
@@ -125,7 +125,7 @@ export default function Timer() {
               {formatTime(timeRemaining)}
             </div>
             <div className="mt-2 text-center text-foreground/60">
-              {modeLabels[mode]}
+              {TIMER_MODE_LABELS[mode]}
             </div>
           </motion.div>
         </AnimatePresence>

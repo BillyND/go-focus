@@ -6,7 +6,7 @@ import { Task } from "./types";
 import { TaskEditor } from "../tasks/TaskEditor";
 import { useTaskStore } from "../../store/taskStore";
 import { useTimerStore } from "../../store/timerStore";
-import { TimerMode } from "../../constants";
+import { TIMER_MODE_LABELS } from "../../constants";
 
 interface TaskListProps {
   currentPomodoroCount: number;
@@ -105,11 +105,6 @@ export default function NewTaskList({
 }: TaskListProps) {
   // Get current timer mode for the header title when no task is selected
   const timerMode = useTimerStore((state) => state.mode);
-  const modeLabels: Record<TimerMode, string> = {
-    pomodoro: "Focus",
-    shortBreak: "Short Break",
-    longBreak: "Long Break",
-  };
 
   // Task store state
   const {
@@ -215,7 +210,7 @@ export default function NewTaskList({
       {/* Header with task title and menu */}
       <div className="text-center mb-2">
         <div className="text-xl text-white font-medium">
-          {selectedTask?.title || modeLabels[timerMode]}
+          {selectedTask?.title || TIMER_MODE_LABELS[timerMode]}
         </div>
       </div>
 

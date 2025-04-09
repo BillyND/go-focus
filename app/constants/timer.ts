@@ -1,5 +1,12 @@
 // Timer related constants
 
+// Timer Mode Labels
+export const TIMER_MODE_LABELS: Record<TimerMode, string> = {
+  pomodoro: "Focus",
+  shortBreak: "Short Break",
+  longBreak: "Long Break",
+};
+
 // Timer Mode
 export enum TimerMode {
   POMODORO = "pomodoro",

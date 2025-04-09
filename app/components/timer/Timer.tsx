@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useTimerStore } from "../../store/timerStore";
-import { TimerMode, TIMER_INTERVAL } from "../../constants";
+import { TimerMode, TIMER_INTERVAL, TIMER_MODE_LABELS } from "../../constants";
 import { getPageTitle } from "../../utils/timeFormat";
 import {
   showPomodoroCompleteNotification,
@@ -10,12 +10,6 @@ import { toast } from "sonner";
 import { TimerTabs } from "./TimerTabs";
 import { TimerDisplay } from "./TimerDisplay";
 import { TimerControls } from "./TimerControls";
-
-const modeLabels: Record<TimerMode, string> = {
-  pomodoro: "Focus Time",
-  shortBreak: "Short Break",
-  longBreak: "Long Break",
-};
 
 export default function Timer() {
   const {
@@ -57,7 +51,11 @@ export default function Timer() {
 
   // Update document title based on timer state
   useEffect(() => {
-    document.title = getPageTitle(timeRemaining, isRunning, modeLabels[mode]);
+    document.title = getPageTitle(
+      timeRemaining,
+      isRunning,
+      TIMER_MODE_LABELS[mode]
+    );
   }, [timeRemaining, isRunning, mode]);
 
   // Handle timer completion notifications
@@ -94,7 +92,7 @@ export default function Timer() {
       <TimerDisplay
         timeRemaining={timeRemaining}
         totalTime={settings[mode] * 60}
-        label={modeLabels[mode]}
+        label={TIMER_MODE_LABELS[mode]}
       />
 
       <div className="mt-6 flex flex-col items-center gap-4">
