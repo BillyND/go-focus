@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { FaCog } from "react-icons/fa";
 import { requestNotificationPermission } from "./utils/notifications";
 import { useTimerStore } from "./store/timerStore";
-import { TimerMode } from "./constants";
+import { DEFAULT_THEME_COLORS, TimerMode } from "./constants";
 import Timer from "./components/timer/Timer";
 import TaskList from "./components/tasks/TaskList";
 import SettingsModal from "./components/settings/SettingsModal";
@@ -18,10 +18,10 @@ export default function Home() {
   const currentThemeColor =
     settings.themeColors?.[mode] ||
     (mode === TimerMode.POMODORO
-      ? "#d95550"
+      ? DEFAULT_THEME_COLORS.pomodoro
       : mode === TimerMode.SHORT_BREAK
-      ? "#4c9195"
-      : "#457ca3");
+      ? DEFAULT_THEME_COLORS.shortBreak
+      : DEFAULT_THEME_COLORS.longBreak);
 
   // Request notification permissions when the app first loads
   useEffect(() => {
