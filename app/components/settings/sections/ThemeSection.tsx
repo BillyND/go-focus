@@ -2,15 +2,8 @@ import React, { memo, useState, useEffect, useCallback } from "react";
 import { debounce } from "../../../utils/debounce";
 import { FaPalette } from "react-icons/fa";
 import { CustomDropdown, DropdownOption } from "../../ui/CustomDropdown";
-import { HourFormat } from "../../../constants";
+import { ColorType, HourFormat } from "../../../constants";
 import { ColorPickerModal } from "../../ui/ColorPickerModal";
-
-// Define color types as enum
-enum ColorType {
-  POMODORO = "pomodoro",
-  SHORT_BREAK = "shortBreak",
-  LONG_BREAK = "longBreak",
-}
 
 // Type for theme colors object
 type ThemeColors = {

@@ -29,3 +29,10 @@ export enum TimerIcons {
   THEME = "theme",
   NOTIFICATION = "notification",
 }
+
+// Define color types as enum
+export enum ColorType {
+  POMODORO = "pomodoro",
+  SHORT_BREAK = "shortBreak",
+  LONG_BREAK = "longBreak",
+}
